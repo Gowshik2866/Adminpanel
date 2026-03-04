@@ -1,34 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/models/staff_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample_app/models/staff.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/animated_hover_card.dart';
 import 'package:sample_app/widgets/empty_state_view.dart';
 import 'package:sample_app/widgets/section_title.dart';
+import 'package:sample_app/providers/staff_provider.dart';
+import 'package:sample_app/core/enums.dart';
 
-class UsersScreen extends StatefulWidget {
+class UsersScreen extends ConsumerStatefulWidget {
   const UsersScreen({super.key});
   @override
-  State<UsersScreen> createState() => _UsersScreenState();
+  ConsumerState<UsersScreen> createState() => _UsersScreenState();
 }
 
-class _UsersScreenState extends State<UsersScreen> {
+class _UsersScreenState extends ConsumerState<UsersScreen> {
   String searchQuery = '';
+  String? selectedDept;
 
-  List<StaffModel> get filteredStaff {
-    if (searchQuery.isEmpty) return allStaffList;
-    final query = searchQuery.toLowerCase();
-    return allStaffList
-        .where(
-          (u) =>
-              u.name.toLowerCase().contains(query) ||
-              u.dept.toLowerCase().contains(query),
-        )
-        .toList();
+  List<Staff> _filteredStaff(List<Staff> staffList) {
+    var list = staffList;
+    if (selectedDept != null && selectedDept != 'All') {
+      list = list.where((s) => s.dept == selectedDept).toList();
+    }
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.toLowerCase();
+      list = list
+          .where(
+            (s) =>
+                s.name.toLowerCase().contains(query) ||
+                s.dept.toLowerCase().contains(query),
+          )
+          .toList();
+    }
+    return list;
   }
 
   @override
   Widget build(BuildContext context) {
-    final staffData = filteredStaff;
+    final activeStaff = ref.watch(activeStaffProvider);
+    final staffData = _filteredStaff(activeStaff);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -37,9 +48,37 @@ class _UsersScreenState extends State<UsersScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionTitle(
-              title: 'Staff Directory',
-              subtitle: 'Manage engineering college staff profiles and access.',
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Expanded(
+                  child: SectionTitle(
+                    title: 'Staff Directory',
+                    subtitle:
+                        'Manage engineering college staff profiles and access.',
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => _showAddStaffDialog(context),
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: const Text(
+                    'Add Staff',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
 
@@ -94,7 +133,9 @@ class _UsersScreenState extends State<UsersScreen> {
                     itemCount: staffData.length,
                     itemBuilder: (context, index) {
                       final staff = staffData[index];
-                      final bool isPresent = staff.status == 'Present';
+                      // For UI purposes, pretending Active means Present, Inactive means Absent just visually like original for now,
+                      // or better: map status to UI colors. Originally used 'Present'. Now we use StaffStatus.
+                      final bool isActive = staff.status == StaffStatus.active;
 
                       return AnimatedHoverCard(
                         padding: const EdgeInsets.all(16),
@@ -104,7 +145,7 @@ class _UsersScreenState extends State<UsersScreen> {
                               radius: 24,
                               backgroundColor: AppTheme.primaryLight,
                               child: Text(
-                                staff.name[0],
+                                staff.name[0].toUpperCase(),
                                 style: const TextStyle(
                                   color: AppTheme.primary,
                                   fontWeight: FontWeight.bold,
@@ -148,15 +189,15 @@ class _UsersScreenState extends State<UsersScreen> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: isPresent
+                                color: isActive
                                     ? AppTheme.successLight
                                     : AppTheme.dangerLight,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                staff.status,
+                                isActive ? 'Active' : 'Inactive',
                                 style: TextStyle(
-                                  color: isPresent
+                                  color: isActive
                                       ? AppTheme.success
                                       : AppTheme.danger,
                                   fontWeight: FontWeight.bold,
@@ -175,5 +216,252 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
       ),
     );
+  }
+
+  void _showAddStaffDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const _AddStaffDialog(),
+    );
+  }
+}
+
+class _AddStaffDialog extends ConsumerStatefulWidget {
+  const _AddStaffDialog();
+
+  @override
+  ConsumerState<_AddStaffDialog> createState() => _AddStaffDialogState();
+}
+
+class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
+  final _formKey = GlobalKey<FormState>();
+
+  String name = '';
+  String email = '';
+  String phone = '';
+  String dept = 'Computer Science';
+  String role = 'Professor';
+  EmploymentType empType = EmploymentType.fullTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Container(
+        width: 500,
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Add New Staff',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Enter details to register a new staff member.',
+                style: TextStyle(color: AppTheme.textSecondary),
+              ),
+              const SizedBox(height: 24),
+
+              TextFormField(
+                decoration: _inputDecoration('Full Name', Icons.person_outline),
+                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                onSaved: (v) => name = v!,
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                decoration: _inputDecoration(
+                  'Email Address',
+                  Icons.email_outlined,
+                ),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Required';
+                  if (!v.contains('@')) return 'Invalid email';
+                  return null;
+                },
+                onSaved: (v) => email = v!,
+              ),
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: _inputDecoration(
+                        'Phone',
+                        Icons.phone_outlined,
+                      ),
+                      validator: (v) =>
+                          v == null || v.isEmpty ? 'Required' : null,
+                      onSaved: (v) => phone = v!,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: dept,
+                      decoration: _inputDecoration(
+                        'Department',
+                        Icons.business_outlined,
+                      ),
+                      items:
+                          [
+                                'Computer Science',
+                                'Mechanical',
+                                'Electrical',
+                                'Civil',
+                              ]
+                              .map(
+                                (d) =>
+                                    DropdownMenuItem(value: d, child: Text(d)),
+                              )
+                              .toList(),
+                      onChanged: (v) => setState(() => dept = v!),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: role,
+                      decoration: _inputDecoration(
+                        'Role',
+                        Icons.badge_outlined,
+                      ),
+                      items:
+                          [
+                                'Professor',
+                                'Asst Professor',
+                                'HOD',
+                                'Lab Instructor',
+                              ]
+                              .map(
+                                (r) =>
+                                    DropdownMenuItem(value: r, child: Text(r)),
+                              )
+                              .toList(),
+                      onChanged: (v) => setState(() => role = v!),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: DropdownButtonFormField<EmploymentType>(
+                      initialValue: empType,
+                      decoration: _inputDecoration('Type', Icons.work_outline),
+                      items: EmploymentType.values
+                          .map(
+                            (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(e.displayName),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) => setState(() => empType = v!),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed: _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                    child: const Text('Add Staff'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
+      filled: true,
+      fillColor: AppTheme.background,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppTheme.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppTheme.border),
+      ),
+    );
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      // Check for duplicate email
+      final allStaff = ref.read(staffProvider);
+      if (allStaff.any((s) => s.email.toLowerCase() == email.toLowerCase())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: Email already exists.')),
+        );
+        return;
+      }
+
+      final newStaff = Staff(
+        id: '', // Will be generated in staffProvider
+        name: name,
+        email: email,
+        phone: phone,
+        dept: dept,
+        role: role,
+        employmentType: empType,
+        joiningDate: DateTime.now(),
+        status: StaffStatus.active,
+      );
+
+      ref.read(staffProvider.notifier).addStaff(newStaff);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$name added successfully!'),
+          backgroundColor: AppTheme.success,
+        ),
+      );
+
+      Navigator.pop(context);
+    }
   }
 }

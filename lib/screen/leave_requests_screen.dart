@@ -1,40 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/models/staff_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample_app/models/leave_request.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/empty_state_view.dart';
-
-// ---------------------------------------------------------------------------
-// Static dummy data
-// ---------------------------------------------------------------------------
-final List<LeaveRequest> _dummyRequests = [
-  LeaveRequest(
-    name: 'Jane Doe',
-    role: 'UI/UX Designer',
-    employeeId: 'HR-102',
-    leaveType: 'Sick Leave',
-    dateRange: 'Oct 24 – Oct 26',
-    initials: 'JD',
-    status: LeaveStatus.pending,
-  ),
-  LeaveRequest(
-    name: 'Michael Smith',
-    role: 'Sr. Developer',
-    employeeId: 'IT-442',
-    leaveType: 'Seminar OD (TechConf 2023)',
-    dateRange: 'Oct 28 (Full Day)',
-    initials: 'MS',
-    status: LeaveStatus.pending,
-  ),
-  LeaveRequest(
-    name: 'Alice Luna',
-    role: 'Marketing',
-    employeeId: 'MK-091',
-    leaveType: 'Annual Leave',
-    dateRange: 'Nov 01 – Nov 05',
-    initials: 'AL',
-    status: LeaveStatus.approved,
-  ),
-];
+import 'package:sample_app/providers/leave_provider.dart';
+import 'package:sample_app/core/enums.dart';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -45,17 +15,17 @@ const double _kContentPaddingH = 24.0;
 // ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
-class LeaveRequestsScreen extends StatefulWidget {
+class LeaveRequestsScreen extends ConsumerStatefulWidget {
   const LeaveRequestsScreen({super.key});
 
   @override
-  State<LeaveRequestsScreen> createState() => _LeaveRequestsScreenState();
+  ConsumerState<LeaveRequestsScreen> createState() =>
+      _LeaveRequestsScreenState();
 }
 
-class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
+class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late List<LeaveRequest> _requests;
 
   String _searchQuery = '';
   String _selectedDept = 'Departments';
@@ -66,7 +36,6 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _requests = List.from(_dummyRequests);
   }
 
   @override
@@ -77,47 +46,28 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
 
   // ── computed ──────────────────────────────────────────────────────────────
 
-  List<LeaveRequest> get _filtered {
+  List<LeaveRequestModel> _filtered(List<LeaveRequestModel> requests) {
     final q = _searchQuery.toLowerCase();
-    if (q.isEmpty) return _requests;
-    return _requests
+    if (q.isEmpty) return requests;
+    return requests
         .where(
           (r) =>
-              r.name.toLowerCase().contains(q) ||
-              r.role.toLowerCase().contains(q),
+              r.staff.name.toLowerCase().contains(q) ||
+              r.staff.role.toLowerCase().contains(q),
         )
         .toList();
   }
 
-  int get _pendingCount =>
-      _requests.where((r) => r.status == LeaveStatus.pending).length;
-
   // ── actions ───────────────────────────────────────────────────────────────
 
-  LeaveRequest _withStatus(LeaveRequest r, LeaveStatus s) => LeaveRequest(
-    name: r.name,
-    role: r.role,
-    employeeId: r.employeeId,
-    leaveType: r.leaveType,
-    dateRange: r.dateRange,
-    initials: r.initials,
-    status: s,
-  );
-
-  void _approve(LeaveRequest req) {
-    setState(() {
-      final i = _requests.indexOf(req);
-      if (i != -1) _requests[i] = _withStatus(req, LeaveStatus.approved);
-    });
-    _showSnack("Approved ${req.name}'s request", AppTheme.success);
+  void _approve(String id, String name) {
+    ref.read(leaveProvider.notifier).approveLeave(id);
+    _showSnack("Approved $name's request", AppTheme.success);
   }
 
-  void _reject(LeaveRequest req) {
-    setState(() {
-      final i = _requests.indexOf(req);
-      if (i != -1) _requests[i] = _withStatus(req, LeaveStatus.rejected);
-    });
-    _showSnack("Rejected ${req.name}'s request", AppTheme.danger);
+  void _reject(String id, String name) {
+    ref.read(leaveProvider.notifier).rejectLeave(id);
+    _showSnack("Rejected $name's request", AppTheme.danger);
   }
 
   void _showSnack(String msg, Color color) {
@@ -139,13 +89,13 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
     );
   }
 
-  void _showDetail(LeaveRequest req) {
+  void _showDetail(LeaveRequestModel req) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          req.name,
+          req.staff.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Column(
@@ -154,12 +104,20 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
           children: [
             _DetailRow(
               icon: Icons.badge_outlined,
-              text: '${req.role} • ${req.employeeId}',
+              text: '${req.staff.role} • ${req.staff.id}',
             ),
             const SizedBox(height: 8),
-            _DetailRow(icon: Icons.event_note_rounded, text: req.leaveType),
+            _DetailRow(
+              icon: Icons.event_note_rounded,
+              text: req.leaveType.displayName,
+            ),
             const SizedBox(height: 8),
             _DetailRow(icon: Icons.calendar_today_rounded, text: req.dateRange),
+            const SizedBox(height: 8),
+            _DetailRow(
+              icon: Icons.chat_bubble_outline,
+              text: req.reason.isEmpty ? 'No reason provided' : req.reason,
+            ),
           ],
         ),
         actions: [
@@ -176,14 +134,16 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filtered;
+    final pendingLeaves = ref.watch(pendingLeavesProvider);
+    final leaves = ref.watch(leaveProvider);
+    final filtered = _filtered(leaves);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Column(
         children: [
           // Header — full width with constrained inner content
-          _PageHeader(pendingCount: _pendingCount),
+          _PageHeader(pendingCount: pendingLeaves.length),
 
           // Tabs — full width
           _TabSection(controller: _tabController),
@@ -301,7 +261,7 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
                           const SizedBox(height: 16),
 
                           // Summary strip
-                          _SummaryStrip(requests: _requests),
+                          _SummaryStrip(requests: leaves),
                         ],
                       ),
                     ),
@@ -327,14 +287,16 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen>
                                     32,
                                   ),
                                   itemCount: filtered.length,
-                                  separatorBuilder: (_, __) =>
+                                  separatorBuilder: (_, _) =>
                                       const SizedBox(height: 16),
                                   itemBuilder: (_, i) {
                                     final req = filtered[i];
                                     return _RequestCard(
                                       data: req,
-                                      onApprove: () => _approve(req),
-                                      onReject: () => _reject(req),
+                                      onApprove: () =>
+                                          _approve(req.id, req.staff.name),
+                                      onReject: () =>
+                                          _reject(req.id, req.staff.name),
                                       onView: () => _showDetail(req),
                                     );
                                   },
@@ -573,7 +535,7 @@ class _FilterDropdown extends StatelessWidget {
 // Summary strip
 // ---------------------------------------------------------------------------
 class _SummaryStrip extends StatelessWidget {
-  final List<LeaveRequest> requests;
+  final List<LeaveRequestModel> requests;
   const _SummaryStrip({required this.requests});
 
   @override
@@ -654,7 +616,7 @@ class _SummaryChip extends StatelessWidget {
 // Request card  ← PRIMARY FIX AREA
 // ---------------------------------------------------------------------------
 class _RequestCard extends StatefulWidget {
-  final LeaveRequest data;
+  final LeaveRequestModel data;
   final VoidCallback onApprove;
   final VoidCallback onReject;
   final VoidCallback onView;
@@ -752,7 +714,7 @@ class _RequestCardState extends State<_RequestCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          req.name,
+                          req.staff.name,
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
@@ -761,7 +723,7 @@ class _RequestCardState extends State<_RequestCard> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${req.role}  •  ${req.employeeId}',
+                          '${req.staff.role}  •  ${req.staff.id}',
                           style: const TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 13,
@@ -787,7 +749,7 @@ class _RequestCardState extends State<_RequestCard> {
                     child: _InfoTile(
                       icon: Icons.event_note_rounded,
                       label: 'Leave Type',
-                      value: req.leaveType,
+                      value: req.leaveType.displayName,
                     ),
                   ),
                   // Vertical separator
