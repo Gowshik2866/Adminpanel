@@ -10,14 +10,18 @@ class TopHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
 
+    final colorScheme = Theme.of(context).colorScheme;
+    final onPrimary = colorScheme.onPrimary;
+    final onPrimaryMuted = onPrimary.withValues(alpha: 0.7);
+
     return Container(
       height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
-        color: AppTheme.primary,
+        color: colorScheme.primary,
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primary.withValues(alpha: 0.3),
+            color: colorScheme.primary.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -31,24 +35,20 @@ class TopHeader extends ConsumerWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: onPrimary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.school_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: Icon(Icons.school_rounded, color: onPrimary, size: 20),
               ),
-              const SizedBox(width: 12),
-              const Column(
+              SizedBox(width: 12),
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'EnggStaff',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: onPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -0.3,
@@ -57,7 +57,7 @@ class TopHeader extends ConsumerWidget {
                   Text(
                     'College Portal',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: onPrimaryMuted,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                     ),
@@ -76,7 +76,7 @@ class TopHeader extends ConsumerWidget {
             icon: Stack(
               clipBehavior: Clip.none,
               children: [
-                const Icon(Icons.notifications_outlined, color: Colors.white),
+                Icon(Icons.notifications_outlined, color: onPrimary),
                 Positioned(
                   right: -2,
                   top: -2,
@@ -87,20 +87,20 @@ class TopHeader extends ConsumerWidget {
                       color: AppTheme
                           .warning, // Semantic Warning for unread alerts
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.primary, width: 2),
+                      border: Border.all(color: colorScheme.primary, width: 2),
                     ),
                   ),
                 ),
               ],
             ),
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 enabled: false,
                 child: Text(
                   'Notifications',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -129,13 +129,13 @@ class TopHeader extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Container(
             width: 1,
             height: 28,
-            color: Colors.white.withValues(alpha: 0.2),
+            color: onPrimary.withValues(alpha: 0.2),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Row(
             children: [
               Column(
@@ -144,29 +144,26 @@ class TopHeader extends ConsumerWidget {
                 children: [
                   Text(
                     user?.name ?? 'Guest',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: onPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
                     user != null ? 'Super Admin' : 'Login Required',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontSize: 11,
-                    ),
+                    style: TextStyle(color: onPrimaryMuted, fontSize: 11),
                   ),
                 ],
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                backgroundColor: onPrimary.withValues(alpha: 0.2),
                 child: Text(
                   user?.name.substring(0, 2).toUpperCase() ?? 'G',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: onPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),

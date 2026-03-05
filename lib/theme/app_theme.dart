@@ -24,15 +24,51 @@ class AppTheme {
 
   static List<BoxShadow>? softCardShadow;
 
-  static ThemeData get theme => ThemeData(
+  static ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(seedColor: primary),
+    brightness: Brightness.light,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: primary,
+      brightness: Brightness.light,
+      surface: surface,
+      onSurface: textPrimary,
+      onSurfaceVariant: textSecondary,
+      primaryContainer: primaryLight,
+      onPrimaryContainer: primary,
+      error: danger,
+      errorContainer: dangerLight,
+    ),
     scaffoldBackgroundColor: background,
     fontFamily: 'Segoe UI',
     cardTheme: CardThemeData(
-      elevation: 0, // Handled by custom hover cards
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: surface,
     ),
+    dividerColor: border,
+  );
+
+  static ThemeData get darkTheme => ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: primary,
+      brightness: Brightness.dark,
+      surface: const Color(0xFF1E293B),
+      onSurface: const Color(0xFFF1F5F9),
+      onSurfaceVariant: const Color(0xFF94A3B8),
+      primaryContainer: const Color(0xFF1E3A8A),
+      onPrimaryContainer: const Color(0xFFBFDBFE),
+      error: const Color(0xFFEF4444),
+      errorContainer: const Color(0xFF450A0A),
+    ),
+    scaffoldBackgroundColor: const Color(0xFF0F172A),
+    fontFamily: 'Segoe UI',
+    cardTheme: CardThemeData(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: const Color(0xFF1E293B),
+    ),
+    dividerColor: const Color(0xFF334155),
   );
 }

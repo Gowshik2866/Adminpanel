@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sample_app/theme/app_theme.dart';
 
+const _defaultPadding = EdgeInsets.all(16);
+
 class AnimatedHoverCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -10,7 +12,7 @@ class AnimatedHoverCard extends StatefulWidget {
     super.key,
     required this.child,
     this.onTap,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = _defaultPadding,
   });
 
   @override
@@ -32,12 +34,12 @@ class _AnimatedHoverCardState extends State<AnimatedHoverCard> {
           curve: Curves.easeOut,
           transform: Matrix4.translationValues(0, isHovered ? -4 : 0, 0),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isHovered
-                  ? AppTheme.primary.withValues(alpha: 0.3)
-                  : AppTheme.border,
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+                  : Theme.of(context).dividerColor,
               width: isHovered ? 1.5 : 1.0,
             ),
             boxShadow: isHovered

@@ -4,7 +4,7 @@ enum LeaveType { sick, casual, annual, od }
 
 enum LeaveStatus { pending, approved, rejected }
 
-enum AttendanceStatus { present, absent, leave }
+enum AttendanceStatus { present, absent, leave, holiday }
 
 enum EmploymentType { fullTime, partTime, intern }
 
@@ -60,6 +60,8 @@ extension AttendanceStatusExt on AttendanceStatus {
         return 'Absent';
       case AttendanceStatus.leave:
         return 'Leave';
+      case AttendanceStatus.holiday:
+        return 'Holiday';
     }
   }
 }

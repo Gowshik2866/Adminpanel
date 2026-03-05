@@ -13,17 +13,17 @@ class SectionTitle extends StatelessWidget {
     children: [
       Text(
         title,
-        style: const TextStyle(
-          color: AppTheme.textPrimary,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
           fontSize: 28,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.5,
         ),
       ),
-      const SizedBox(height: 6),
+      SizedBox(height: 6),
       Text(
         subtitle,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
       ),
     ],
   );

@@ -1,0 +1,84 @@
+Analyzing sample_app...                                         
+
+  error - Invalid constant value - lib\screen\dashboard_screen.dart:39:26 - invalid_constant
+  error - Invalid constant value - lib\screen\holiday_details_screen.dart:204:55 - invalid_constant
+  error - Invalid constant value - lib\screen\holiday_details_screen.dart:209:44 - invalid_constant
+  error - Invalid constant value - lib\screen\holiday_details_screen.dart:231:40 - invalid_constant
+  error - Invalid constant value - lib\screen\holiday_details_screen.dart:242:40 - invalid_constant
+  error - Invalid constant value - lib\screen\holiday_details_screen.dart:249:40 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:178:40 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:183:40 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:194:42 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:200:42 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:206:42 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:366:34 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:520:20 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:527:20 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:726:36 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:733:36 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:746:47 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:778:47 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:856:24 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:868:20 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:1006:20 - invalid_constant
+  error - Invalid constant value - lib\screen\leave_requests_screen.dart:1031:43 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:73:34 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:89:24 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:155:30 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:191:24 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:213:30 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:224:30 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:236:30 - invalid_constant
+  error - Invalid constant value - lib\screen\settings_screen.dart:247:30 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:90:51 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:93:26 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:104:28 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:150:42 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:167:46 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:176:46 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:269:26 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:275:41 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:421:45 - invalid_constant
+  error - Invalid constant value - lib\screen\users_screen.dart:425:45 - invalid_constant
+  error - Invalid constant value - lib\screens\department_attendance_detail_screen.dart:156:20 - invalid_constant
+  error - Invalid constant value - lib\screens\department_attendance_detail_screen.dart:199:26 - invalid_constant
+  error - Invalid constant value - lib\screens\department_attendance_detail_screen.dart:277:24 - invalid_constant
+  error - Invalid constant value - lib\screens\department_attendance_detail_screen.dart:281:43 - invalid_constant
+  error - Invalid constant value - lib\screens\department_attendance_detail_screen.dart:287:49 - invalid_constant
+   info - 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\theme\app_theme.dart:64:7 - deprecated_member_use
+  error - Invalid constant value - lib\widgets\app_sidebar.dart:32:16 - invalid_constant
+  error - Invalid constant value - lib\widgets\app_sidebar.dart:53:43 - invalid_constant
+  error - Invalid constant value - lib\widgets\attendance_donut_card.dart:25:22 - invalid_constant
+  error - Invalid constant value - lib\widgets\attendance_donut_card.dart:44:34 - invalid_constant
+  error - Invalid constant value - lib\widgets\attendance_donut_card.dart:67:20 - invalid_constant
+  error - Invalid constant value - lib\widgets\attendance_donut_card.dart:72:36 - invalid_constant
+  error - Invalid constant value - lib\widgets\attendance_donut_card.dart:74:36 - invalid_constant
+  error - Invalid constant value - lib\widgets\chart_legend.dart:27:20 - invalid_constant
+  error - Invalid constant value - lib\widgets\chart_legend.dart:36:18 - invalid_constant
+  error - Invalid constant value - lib\widgets\custombar_chart_card.dart:98:24 - invalid_constant
+  error - Invalid constant value - lib\widgets\custombar_chart_card.dart:160:28 - invalid_constant
+  error - Invalid constant value - lib\widgets\custombar_chart_card.dart:242:38 - invalid_constant
+  error - Invalid constant value - lib\widgets\custombar_chart_card.dart:395:26 - invalid_constant
+  error - Invalid constant value - lib\widgets\department_summary_card.dart:34:22 - invalid_constant
+  error - Const variables must be initialized with a constant value - lib\widgets\donut_chart_painter.dart:25:21 - const_initialized_with_non_constant_value
+  error - The values in a const list literal must be constants - lib\widgets\donut_chart_painter.dart:25:21 - non_constant_list_element
+  error - The values in a const list literal must be constants - lib\widgets\donut_chart_painter.dart:25:39 - non_constant_list_element
+  error - The values in a const list literal must be constants - lib\widgets\donut_chart_painter.dart:25:56 - non_constant_list_element
+  error - Invalid constant value - lib\widgets\empty_stat_view_leave.dart:28:24 - invalid_constant
+  error - Invalid constant value - lib\widgets\empty_state_view.dart:31:24 - invalid_constant
+  error - Invalid constant value - lib\widgets\leave_request_card.dart:26:28 - invalid_constant
+  error - Invalid constant value - lib\widgets\leave_request_card.dart:41:32 - invalid_constant
+  error - Invalid constant value - lib\widgets\leave_request_card.dart:48:32 - invalid_constant
+  error - Invalid constant value - lib\widgets\leave_request_card.dart:64:24 - invalid_constant
+  error - Invalid constant value - lib\widgets\leave_request_card.dart:76:24 - invalid_constant
+  error - Invalid constant value - lib\widgets\navigation_title.dart:74:28 - invalid_constant
+  error - Invalid constant value - lib\widgets\overview_stat_card.dart:77:22 - invalid_constant
+  error - Invalid constant value - lib\widgets\overview_stat_card.dart:87:22 - invalid_constant
+  error - Invalid constant value - lib\widgets\report_card_interactive.dart:40:43 - invalid_constant
+  error - Invalid constant value - lib\widgets\section_title.dart:15:18 - invalid_constant
+  error - Invalid constant value - lib\widgets\section_title_leave.dart:17:18 - invalid_constant
+  error - Invalid constant value - lib\widgets\section_title_leave.dart:26:39 - invalid_constant
+  error - Invalid constant value - lib\widgets\top_header.dart:103:28 - invalid_constant
+  error - Invalid constant value - lib\widgets\top_header.dart:112:28 - invalid_constant
+  error - Invalid constant value - lib\widgets\top_header.dart:123:28 - invalid_constant
+

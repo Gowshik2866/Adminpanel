@@ -5,6 +5,7 @@ import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/empty_state_view.dart';
 import 'package:sample_app/providers/leave_provider.dart';
 import 'package:sample_app/core/enums.dart';
+import 'package:sample_app/screen/holiday_details_screen.dart';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -35,7 +36,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -67,7 +68,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
 
   void _reject(String id, String name) {
     ref.read(leaveProvider.notifier).rejectLeave(id);
-    _showSnack("Rejected $name's request", AppTheme.danger);
+    _showSnack("Rejected $name's request", Theme.of(context).colorScheme.error);
   }
 
   void _showSnack(String msg, Color color) {
@@ -75,15 +76,15 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
       SnackBar(
         content: Text(
           msg,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -96,7 +97,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           req.staff.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -106,14 +107,14 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
               icon: Icons.badge_outlined,
               text: '${req.staff.role} • ${req.staff.id}',
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             _DetailRow(
               icon: Icons.event_note_rounded,
               text: req.leaveType.displayName,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             _DetailRow(icon: Icons.calendar_today_rounded, text: req.dateRange),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             _DetailRow(
               icon: Icons.chat_bubble_outline,
               text: req.reason.isEmpty ? 'No reason provided' : req.reason,
@@ -121,10 +122,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Close')),
         ],
       ),
     );
@@ -139,7 +137,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
     final filtered = _filtered(leaves);
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           // Header — full width with constrained inner content
@@ -159,7 +157,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                   children: [
                     // Search + Filters
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         _kContentPaddingH,
                         24,
                         _kContentPaddingH,
@@ -173,43 +171,45 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                             onChanged: (v) => setState(() => _searchQuery = v),
                             decoration: InputDecoration(
                               hintText: 'Search staff name...',
-                              hintStyle: const TextStyle(
-                                color: AppTheme.textMuted,
+                              hintStyle: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.5),
                                 fontSize: 14,
                               ),
-                              prefixIcon: const Icon(
+                              prefixIcon: Icon(
                                 Icons.search_rounded,
-                                color: AppTheme.primary,
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
                               filled: true,
-                              fillColor: AppTheme.surface,
-                              contentPadding: const EdgeInsets.symmetric(
+                              fillColor: Theme.of(context).cardColor,
+                              contentPadding: EdgeInsets.symmetric(
                                 vertical: 14,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.border,
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.border,
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.primary,
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
                                   width: 2,
                                 ),
                               ),
                             ),
                           ),
 
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
 
                           // Filter row
                           SingleChildScrollView(
@@ -231,7 +231,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                                     () => _selectedDept = v ?? _selectedDept,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _FilterDropdown(
                                   value: _selectedPeriod,
                                   items: const [
@@ -245,7 +245,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                                         _selectedPeriod = v ?? _selectedPeriod,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _FilterDropdown(
                                   value: _selectedPriority,
                                   items: const ['Priority', 'A-Z', 'Z-A'],
@@ -258,7 +258,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                             ),
                           ),
 
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
 
                           // Summary strip
                           _SummaryStrip(requests: leaves),
@@ -266,7 +266,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
 
                     // Tab content
                     Expanded(
@@ -280,7 +280,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                                   icon: Icons.event_busy_rounded,
                                 )
                               : ListView.separated(
-                                  padding: const EdgeInsets.fromLTRB(
+                                  padding: EdgeInsets.fromLTRB(
                                     _kContentPaddingH,
                                     16,
                                     _kContentPaddingH,
@@ -288,7 +288,7 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                                   ),
                                   itemCount: filtered.length,
                                   separatorBuilder: (_, _) =>
-                                      const SizedBox(height: 16),
+                                      SizedBox(height: 16),
                                   itemBuilder: (_, i) {
                                     final req = filtered[i];
                                     return _RequestCard(
@@ -307,6 +307,9 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                             message: 'No OD requests found.',
                             icon: Icons.work_off_rounded,
                           ),
+
+                          // ── Holiday Announcements tab ──────────────────
+                          const HolidayDetailsScreen(),
                         ],
                       ),
                     ),
@@ -335,13 +338,13 @@ class _PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppTheme.surface,
+      color: Theme.of(context).cardColor,
       child: Align(
         alignment: Alignment.center,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: _kMaxContentWidth),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               _kContentPaddingH,
               16,
               _kContentPaddingH,
@@ -350,34 +353,34 @@ class _PageHeader extends StatelessWidget {
             child: Row(
               children: [
                 _IconBtn(icon: Icons.arrow_back_ios_new_rounded, onTap: () {}),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Row(
                     children: [
-                      const Text(
+                      Text(
                         'Pending Requests',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
-                          color: AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: -0.4,
                         ),
                       ),
                       if (pendingCount > 0) ...[
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.primary,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             '$pendingCount',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
@@ -398,10 +401,10 @@ class _PageHeader extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: AppTheme.danger,
+                          color: Theme.of(context).colorScheme.error,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppTheme.surface,
+                            color: Theme.of(context).cardColor,
                             width: 1.5,
                           ),
                         ),
@@ -435,11 +438,15 @@ class _IconBtn extends StatelessWidget {
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: AppTheme.background,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppTheme.border),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
-        child: Icon(icon, size: 18, color: AppTheme.textSecondary),
+        child: Icon(
+          icon,
+          size: 18,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }
@@ -455,28 +462,28 @@ class _TabSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppTheme.surface,
+      color: Theme.of(context).cardColor,
       child: Align(
         alignment: Alignment.centerLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: _kMaxContentWidth),
           child: TabBar(
             controller: controller,
-            labelColor: AppTheme.primary,
-            unselectedLabelColor: AppTheme.textMuted,
-            indicatorColor: AppTheme.primary,
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
+            indicatorColor: Theme.of(context).colorScheme.primary,
             indicatorWeight: 3,
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
-            unselectedLabelStyle: const TextStyle(
+            labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+            unselectedLabelStyle: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),
             tabs: const [
               Tab(text: 'Leave Requests'),
               Tab(text: 'OD Requests'),
+              Tab(text: 'Holiday Announcements'),
             ],
           ),
         ),
@@ -501,25 +508,27 @@ class _FilterDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
           isDense: true,
-          style: const TextStyle(
-            color: AppTheme.textPrimary,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
-          icon: const Icon(
+          icon: Icon(
             Icons.keyboard_arrow_down_rounded,
             size: 18,
-            color: AppTheme.textMuted,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           items: items
               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -553,17 +562,17 @@ class _SummaryStrip extends StatelessWidget {
     return Row(
       children: [
         _SummaryChip(label: 'Pending', count: pending, color: AppTheme.warning),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         _SummaryChip(
           label: 'Approved',
           count: approved,
           color: AppTheme.success,
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         _SummaryChip(
           label: 'Rejected',
           count: rejected,
-          color: AppTheme.danger,
+          color: Theme.of(context).colorScheme.error,
         ),
       ],
     );
@@ -583,7 +592,7 @@ class _SummaryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
         color: color.withOpacity(0.10),
@@ -597,7 +606,7 @@ class _SummaryChip extends StatelessWidget {
             height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: 6),
           Text(
             '$label ($count)',
             style: TextStyle(
@@ -648,10 +657,19 @@ class _RequestCardState extends State<_RequestCard> {
     Color(0xFF9D174D),
   ];
 
-  Color get _avatarBg =>
-      _bgPalette[widget.data.initials.hashCode.abs() % _bgPalette.length];
-  Color get _avatarFg =>
-      _fgPalette[widget.data.initials.hashCode.abs() % _fgPalette.length];
+  Color get _avatarBg {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark
+        ? Theme.of(context).colorScheme.primaryContainer
+        : _bgPalette[widget.data.initials.hashCode.abs() % _bgPalette.length];
+  }
+
+  Color get _avatarFg {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark
+        ? Theme.of(context).colorScheme.onPrimaryContainer
+        : _fgPalette[widget.data.initials.hashCode.abs() % _fgPalette.length];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -666,29 +684,31 @@ class _RequestCardState extends State<_RequestCard> {
         curve: Curves.easeOut,
         transform: Matrix4.translationValues(0, _hovered ? -3 : 0, 0),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: _hovered
                 // ignore: deprecated_member_use
-                ? AppTheme.primary.withOpacity(0.25)
-                : AppTheme.border,
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.25)
+                : Theme.of(context).dividerColor,
             width: _hovered ? 1.5 : 1.0,
           ),
           boxShadow: [
             BoxShadow(
               color: _hovered
-                  // ignore: deprecated_member_use
-                  ? AppTheme.primary.withOpacity(0.08)
-                  // ignore: deprecated_member_use
-                  : Colors.black.withOpacity(0.04),
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.08)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.04),
               blurRadius: _hovered ? 20 : 8,
               offset: Offset(0, _hovered ? 8 : 2),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -708,38 +728,40 @@ class _RequestCardState extends State<_RequestCard> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           req.staff.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
-                            color: AppTheme.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2),
                         Text(
                           '${req.staff.role}  •  ${req.staff.id}',
-                          style: const TextStyle(
-                            color: AppTheme.textSecondary,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             fontSize: 13,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   _StatusBadge(status: req.status),
                 ],
               ),
 
-              const SizedBox(height: 16),
-              const Divider(height: 1, color: AppTheme.border),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
+              Divider(height: 1, color: Theme.of(context).dividerColor),
+              SizedBox(height: 16),
 
               // ── Row 2: Leave type + Date (visually grouped) ────────────
               Row(
@@ -756,8 +778,8 @@ class _RequestCardState extends State<_RequestCard> {
                   Container(
                     width: 1,
                     height: 36,
-                    color: AppTheme.border,
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    color: Theme.of(context).dividerColor,
+                    margin: EdgeInsets.symmetric(horizontal: 16),
                   ),
                   // Date range — visually adjacent, same visual weight
                   _InfoTile(
@@ -769,9 +791,9 @@ class _RequestCardState extends State<_RequestCard> {
                 ],
               ),
 
-              const SizedBox(height: 16),
-              const Divider(height: 1, color: AppTheme.border),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
+              Divider(height: 1, color: Theme.of(context).dividerColor),
+              SizedBox(height: 16),
 
               // ── Row 3: Action buttons ─────────────────────────────────
               // Approve(flex 3) | gap | Reject(flex 2) | gap | Eye(48×48)
@@ -785,22 +807,22 @@ class _RequestCardState extends State<_RequestCard> {
                         label: 'Approve',
                         icon: Icons.check_rounded,
                         filled: true,
-                        color: AppTheme.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         onTap: widget.onApprove,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       flex: 2,
                       child: _ActionButton(
                         label: 'Reject',
                         icon: Icons.close_rounded,
                         filled: false,
-                        color: AppTheme.danger,
+                        color: Theme.of(context).colorScheme.error,
                         onTap: widget.onReject,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                   ] else
                     const Spacer(),
                   // Eye button — fixed 48×48, baseline-aligned with buttons
@@ -843,12 +865,20 @@ class _InfoTile extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 13, color: AppTheme.textMuted),
-            const SizedBox(width: 4),
+            Icon(
+              icon,
+              size: 13,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+            SizedBox(width: 4),
             Text(
               label,
-              style: const TextStyle(
-                color: AppTheme.textMuted,
+              style: TextStyle(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.4,
@@ -856,11 +886,11 @@ class _InfoTile extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            color: AppTheme.textPrimary,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
@@ -890,7 +920,7 @@ class _StatusBadge extends StatelessWidget {
         label = 'APPROVED';
         break;
       case LeaveStatus.rejected:
-        color = AppTheme.danger;
+        color = Theme.of(context).colorScheme.error;
         label = 'REJECTED';
         break;
       default:
@@ -899,7 +929,7 @@ class _StatusBadge extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
         color: color.withOpacity(0.13),
@@ -954,7 +984,7 @@ class _ActionButton extends StatelessWidget {
               label: Text(label),
               style: ElevatedButton.styleFrom(
                 backgroundColor: color,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 elevation: 0,
                 textStyle: textStyle,
                 shape: shape,
@@ -990,15 +1020,15 @@ class _EyeButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.background,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppTheme.border),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
-        child: const Center(
+        child: Center(
           child: Icon(
             Icons.remove_red_eye_outlined,
             size: 18,
-            color: AppTheme.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ),
@@ -1018,12 +1048,19 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppTheme.textMuted),
-        const SizedBox(width: 8),
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+        SizedBox(width: 8),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 14,
+            ),
           ),
         ),
       ],

@@ -24,7 +24,7 @@ class _ReportCardInteractiveState extends State<ReportCardInteractive> {
   @override
   Widget build(BuildContext context) {
     return AnimatedHoverCard(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,14 +32,14 @@ class _ReportCardInteractiveState extends State<ReportCardInteractive> {
           const Spacer(),
           Text(
             widget.item['title'],
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             widget.item['sub'],
-            style: const TextStyle(color: AppTheme.textSecondary),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             height: 40,
@@ -62,7 +62,7 @@ class _ReportCardInteractiveState extends State<ReportCardInteractive> {
                         color: widget.item['color'],
                       ),
                     )
-                  : const Text(
+                  : Text(
                       'Generate Report',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),

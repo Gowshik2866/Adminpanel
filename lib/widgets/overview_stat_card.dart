@@ -39,11 +39,11 @@ class OverviewStatCard extends StatelessWidget {
                 child: Icon(icon, color: ic, size: 24),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: positive
                       ? AppTheme.successLight
-                      : AppTheme.dangerLight,
+                      : Theme.of(context).colorScheme.errorContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -54,13 +54,13 @@ class OverviewStatCard extends StatelessWidget {
                           ? Icons.trending_up_rounded
                           : Icons.trending_down_rounded,
                       size: 14,
-                      color: positive ? AppTheme.success : AppTheme.danger,
+                      color: positive ? AppTheme.success : Theme.of(context).colorScheme.error,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       delta,
                       style: TextStyle(
-                        color: positive ? AppTheme.success : AppTheme.danger,
+                        color: positive ? AppTheme.success : Theme.of(context).colorScheme.error,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
@@ -70,21 +70,21 @@ class OverviewStatCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Text(
             value,
-            style: const TextStyle(
-              color: AppTheme.textPrimary,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 32,
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              color: AppTheme.textSecondary,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontSize: 13,
               fontWeight: FontWeight.w500,
             ),

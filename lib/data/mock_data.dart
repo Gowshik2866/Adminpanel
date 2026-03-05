@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:sample_app/core/enums.dart';
 import 'package:sample_app/models/staff.dart';
 import 'package:sample_app/models/attendance.dart';
@@ -18,120 +19,117 @@ class MockData {
     maxAnnualLeaves: 15,
   );
 
+  static final _random = Random(42);
+
   // Staff
-  static final List<Staff> initialStaff = [
-    Staff(
-      id: 'F001',
-      name: 'Dr. Alice Johnson',
-      email: 'alice.j@engg.edu',
-      phone: '123-456-7890',
-      role: 'Professor',
-      dept: 'CSE',
-      employmentType: EmploymentType.fullTime,
-      status: StaffStatus.active,
-      joiningDate: DateTime(2018, 5, 20),
-    ),
-    Staff(
-      id: 'F002',
-      name: 'Prof. Bob Martin',
-      email: 'bob.m@engg.edu',
-      phone: '987-654-3210',
-      role: 'Asst. Prof',
-      dept: 'ECE',
-      employmentType: EmploymentType.fullTime,
-      status: StaffStatus.active,
-      joiningDate: DateTime(2020, 8, 15),
-    ),
-    Staff(
-      id: 'F003',
-      name: 'Dr. Carol White',
-      email: 'carol.w@engg.edu',
-      phone: '555-123-4567',
-      role: 'HOD',
-      dept: 'MECH',
-      employmentType: EmploymentType.fullTime,
-      status: StaffStatus.active,
-      joiningDate: DateTime(2015, 1, 10),
-    ),
-    Staff(
-      id: 'F004',
-      name: 'David Lee',
-      email: 'david.l@engg.edu',
-      phone: '111-222-3333',
-      role: 'Lab Instructor',
-      dept: 'IT',
-      employmentType: EmploymentType.fullTime,
-      status: StaffStatus.active,
-      joiningDate: DateTime(2021, 3, 1),
-    ),
-    Staff(
-      id: 'F005',
-      name: 'Dr. Eva Chen',
-      email: 'eva.c@engg.edu',
-      phone: '444-555-6666',
-      role: 'Professor',
-      dept: 'AI&DS',
-      employmentType: EmploymentType.partTime,
-      status: StaffStatus.active,
-      joiningDate: DateTime(2019, 11, 20),
-    ),
-    Staff(
-      id: 'F006',
-      name: 'Dr. Mark Smith',
-      email: 'mark.s@engg.edu',
-      phone: '777-888-9999',
-      role: 'Professor',
-      dept: 'CIVIL',
-      employmentType: EmploymentType.fullTime,
-      status: StaffStatus.inactive,
-      joiningDate: DateTime(2017, 7, 7),
-    ),
-  ];
+  static final List<Staff> initialStaff = _generateStaff();
+
+  static List<Staff> _generateStaff() {
+    final List<Staff> staffList = [];
+    final Map<String, int> deptSizes = {
+      'CSE': 42,
+      'AI&DS': 35,
+      'MECH': 28,
+      'ECE': 31,
+      'MBA': 22,
+    };
+    int idCounter = 1;
+
+    deptSizes.forEach((dept, count) {
+      for (int i = 0; i < count; i++) {
+        final id = 'F${idCounter.toString().padLeft(3, '0')}';
+        staffList.add(
+          Staff(
+            id: id,
+            name: 'Staff $id',
+            email: 'staff$id@engg.edu',
+            phone: '555-000-${idCounter.toString().padLeft(4, '0')}',
+            role: i == 0 ? 'HOD' : (i < 5 ? 'Professor' : 'Asst. Prof'),
+            dept: dept,
+            employmentType: EmploymentType.fullTime,
+            status: StaffStatus.active,
+            joiningDate: DateTime(
+              2015 + _random.nextInt(8),
+              _random.nextInt(12) + 1,
+              _random.nextInt(28) + 1,
+            ),
+          ),
+        );
+        idCounter++;
+      }
+    });
+    return staffList;
+  }
 
   static final List<AttendanceRecord> initialAttendance =
-      generateInitialAttendance();
+      _generateInitialAttendance();
 
-  static List<AttendanceRecord> generateInitialAttendance() {
+  static List<AttendanceRecord> _generateInitialAttendance() {
     final List<AttendanceRecord> records = [];
     final today = DateTime.now();
+
+    double getDeptBase(String dept) {
+      if (dept == 'CSE' || dept == 'AI&DS') return 90.0;
+      if (dept == 'ECE') return 86.0;
+      if (dept == 'MECH') return 78.0;
+      if (dept == 'MBA') return 80.0;
+      return 85.0;
+    }
+
+    double getDeptVolatility(String dept) {
+      if (dept == 'CSE' || dept == 'AI&DS') return 5.5;
+      if (dept == 'ECE') return 6.0;
+      if (dept == 'MECH') return 7.5;
+      if (dept == 'MBA') return 18.0;
+      return 10.0;
+    }
+
     for (int i = 0; i < 30; i++) {
       final date = today.subtract(Duration(days: i));
-      // Skip weekends roughly (not using exact calendar logic here for simplicity but let's avoid typical weekends)
-      if (date.weekday == DateTime.saturday ||
-          date.weekday == DateTime.sunday) {
-        continue;
-      }
-      for (final staff in initialStaff) {
-        // Give some random absences
-        AttendanceStatus status = AttendanceStatus.present;
-        if (date.day % 7 == 0 && staff.id == 'F002') {
-          status = AttendanceStatus.absent;
-        } else if (date.day % 14 == 0 && staff.id == 'F005') {
-          status = AttendanceStatus.leave;
-        }
+      final isWeekend =
+          (date.weekday == DateTime.saturday ||
+          date.weekday == DateTime.sunday);
+      final improvementFactor =
+          ((29 - i) / 29) * 4.0; // Gradual improvement toward 'today'
 
-        // Let's make today match the static list roughly.
-        // Dr. Alice - Present
-        // Prof. Bob - Absent
-        // Dr. Eva - Absent
-        if (i == 0) {
-          if (staff.id == 'F002' || staff.id == 'F005') {
-            status = AttendanceStatus.absent;
+      for (final s in initialStaff) {
+        double base = getDeptBase(s.dept);
+        double vol = getDeptVolatility(s.dept);
+        double targetPercent = base + (_random.nextDouble() * vol * 2 - vol);
+
+        targetPercent += improvementFactor;
+
+        if (isWeekend) targetPercent -= 8.0; // slight dip on weekends
+        if (i == 14 || i == 24) targetPercent -= 12.0; // noticeable low days
+
+        if (targetPercent > 100) targetPercent = 100;
+        if (targetPercent < 0) targetPercent = 0;
+
+        double chance = _random.nextDouble() * 100;
+        AttendanceStatus status;
+
+        if (chance <= targetPercent) {
+          status = AttendanceStatus.present;
+        } else {
+          double rem = _random.nextDouble();
+          if (rem > 0.6) {
+            status = AttendanceStatus.leave;
           } else {
-            status = AttendanceStatus.present;
+            status = AttendanceStatus.absent;
           }
         }
 
         records.add(
           AttendanceRecord(
             id: _uuid.v4(),
-            staffId: staff.id,
+            staffId: s.id,
             date: DateTime(date.year, date.month, date.day),
             status: status,
           ),
         );
       }
     }
+
     return records;
   }
 

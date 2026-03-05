@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/navigation_item_data.dart';
 import 'package:sample_app/widgets/navigation_title.dart';
 
@@ -28,16 +27,18 @@ class AppSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 240,
-      decoration: const BoxDecoration(
-        color: AppTheme.surface,
-        border: Border(right: BorderSide(color: AppTheme.border, width: 1)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        border: Border(
+          right: BorderSide(color: Theme.of(context).dividerColor, width: 1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: List.generate(
                 items.length,
@@ -50,9 +51,9 @@ class AppSidebar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          const Divider(height: 1, color: AppTheme.border),
+          Divider(height: 1, color: Theme.of(context).dividerColor),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: NavigationTile(
               item: const NavigationItemData(
                 icon: Icons.logout_rounded,
@@ -60,8 +61,8 @@ class AppSidebar extends StatelessWidget {
               ),
               selected: false,
               onTap: () {}, // Single consistent logout location
-              textColor: AppTheme.danger,
-              iconColor: AppTheme.danger,
+              textColor: Theme.of(context).colorScheme.error,
+              iconColor: Theme.of(context).colorScheme.error,
             ),
           ),
         ],

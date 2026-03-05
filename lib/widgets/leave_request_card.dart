@@ -11,7 +11,7 @@ class LeaveRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedHoverCard(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -19,63 +19,63 @@ class LeaveRequestCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: AppTheme.primaryLight,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 child: Text(
                   data.initials,
-                  style: const TextStyle(
-                    color: AppTheme.primary,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       data.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       "${data.role} • ${data.employeeId}",
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 13,
                       ),
                     ),
                   ],
                 ),
               ),
-              _buildStatusBadge(data.status),
+              _buildStatusBadge(context, data.status),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.event_note_rounded,
                 size: 18,
-                color: AppTheme.textMuted,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(data.leaveType),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.calendar_today_rounded,
                 size: 16,
-                color: AppTheme.textMuted,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(data.dateRange),
             ],
           ),
@@ -84,12 +84,12 @@ class LeaveRequestCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(LeaveStatus status) {
+  Widget _buildStatusBadge(BuildContext context, LeaveStatus status) {
     switch (status) {
       case LeaveStatus.approved:
         return _statusChip("APPROVED", AppTheme.success);
       case LeaveStatus.rejected:
-        return _statusChip("REJECTED", AppTheme.danger);
+        return _statusChip("REJECTED", Theme.of(context).colorScheme.error);
       default:
         return _statusChip("PENDING", AppTheme.warning);
     }
@@ -97,7 +97,7 @@ class LeaveRequestCard extends StatelessWidget {
 
   Widget _statusChip(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
         color: color.withOpacity(0.15),

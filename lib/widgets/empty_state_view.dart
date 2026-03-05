@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
 
 class EmptyStateView extends StatelessWidget {
   final String message;
@@ -15,20 +14,22 @@ class EmptyStateView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: EdgeInsets.all(40.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
               size: 64,
-              color: AppTheme.textMuted.withValues(alpha: 0.5),
+              color: Theme.of(context).colorScheme.onSurface
+                  .withValues(alpha: 0.5)
+                  .withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               message,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),

@@ -19,7 +19,7 @@ class DepartmentSummaryCard extends StatelessWidget {
         ? AppTheme.success
         : percent >= 0.80
         ? AppTheme.warning
-        : AppTheme.danger;
+        : Theme.of(context).colorScheme.error;
 
     return AnimatedHoverCard(
       child: Column(
@@ -28,10 +28,10 @@ class DepartmentSummaryCard extends StatelessWidget {
         children: [
           Text(
             dept,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -53,7 +53,7 @@ class DepartmentSummaryCard extends StatelessWidget {
                 width: 40,
                 child: CircularProgressIndicator(
                   value: percent,
-                  backgroundColor: AppTheme.border,
+                  backgroundColor: Theme.of(context).dividerColor,
                   color: indicatorColor,
                   strokeWidth: 5,
                   strokeCap: StrokeCap.round,

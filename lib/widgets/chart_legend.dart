@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
 
 class ChartLegend extends StatelessWidget {
   final Color color;
@@ -19,12 +18,12 @@ class ChartLegend extends StatelessWidget {
         height: 12,
         decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
-      const SizedBox(width: 12),
+      SizedBox(width: 12),
       Expanded(
         child: Text(
           label,
-          style: const TextStyle(
-            color: AppTheme.textSecondary,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -32,8 +31,8 @@ class ChartLegend extends StatelessWidget {
       ),
       Text(
         pct,
-        style: const TextStyle(
-          color: AppTheme.textPrimary,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
           fontSize: 14,
           fontWeight: FontWeight.w700,
         ),

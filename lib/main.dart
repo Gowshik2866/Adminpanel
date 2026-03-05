@@ -2,23 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/app_shell.dart';
-import 'package:sample_app/providers/settings_provider.dart';
+import 'package:sample_app/providers/theme_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(const ProviderScope(child: StaffAdminApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      child: const StaffAdminApp(),
+    ),
+  );
+}
 
 class StaffAdminApp extends ConsumerWidget {
   const StaffAdminApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider);
+    final isDark = ref.watch(themeProvider);
 
     return MaterialApp(
       title: 'College Staff Portal',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme
-          .theme, // Replace this later with a dedicated light theme if split, for now let flutter handle or define explicit dark
-      themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       home: const AppShell(),
     );
   }

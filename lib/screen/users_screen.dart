@@ -42,9 +42,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     final staffData = _filteredStaff(activeStaff);
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,18 +60,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () => _showAddStaffDialog(context),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text(
+                  icon: Icon(Icons.add_rounded, size: 18),
+                  label: Text(
                     'Add Staff',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -80,35 +77,39 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // Search Bar with improved Visual Purpose & States
             TextField(
               onChanged: (v) => setState(() => searchQuery = v),
               decoration: InputDecoration(
                 hintText: 'Search by staff name or department...',
-                hintStyle: const TextStyle(color: AppTheme.textMuted),
-                prefixIcon: const Icon(
+                hintStyle: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+                prefixIcon: Icon(
                   Icons.search_rounded,
-                  color: AppTheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 filled: true,
-                fillColor: AppTheme.surface,
+                fillColor: Theme.of(context).cardColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primary,
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
                     width: 2,
                   ),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                contentPadding: EdgeInsets.symmetric(vertical: 16),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Handle Empty State
             if (staffData.isEmpty)
@@ -138,22 +139,24 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                       final bool isActive = staff.status == StaffStatus.active;
 
                       return AnimatedHoverCard(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         child: Row(
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: AppTheme.primaryLight,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
                               child: Text(
                                 staff.name[0].toUpperCase(),
-                                style: const TextStyle(
-                                  color: AppTheme.primary,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,19 +164,23 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 children: [
                                   Text(
                                     staff.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
-                                      color: AppTheme.textPrimary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Text(
                                     '${staff.role} • ${staff.dept}',
-                                    style: const TextStyle(
-                                      color: AppTheme.textSecondary,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                       fontSize: 12,
                                     ),
                                     maxLines: 1,
@@ -182,16 +189,18 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
                                 color: isActive
                                     ? AppTheme.successLight
-                                    : AppTheme.dangerLight,
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.errorContainer,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -199,7 +208,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                                 style: TextStyle(
                                   color: isActive
                                       ? AppTheme.success
-                                      : AppTheme.danger,
+                                      : Theme.of(context).colorScheme.error,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -249,10 +258,10 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
-        width: 500,
-        padding: const EdgeInsets.all(32),
+        width: 550,
+        padding: EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Form(
@@ -261,27 +270,29 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Add New Staff',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: 8),
+              Text(
                 'Enter details to register a new staff member.',
-                style: TextStyle(color: AppTheme.textSecondary),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               TextFormField(
                 decoration: _inputDecoration('Full Name', Icons.person_outline),
                 validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                 onSaved: (v) => name = v!,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               TextFormField(
                 decoration: _inputDecoration(
@@ -295,7 +306,7 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
                 },
                 onSaved: (v) => email = v!,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               Row(
                 children: [
@@ -310,7 +321,7 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
                       onSaved: (v) => phone = v!,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: dept,
@@ -335,7 +346,7 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               Row(
                 children: [
@@ -361,7 +372,7 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
                       onChanged: (v) => setState(() => role = v!),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: DropdownButtonFormField<EmploymentType>(
                       initialValue: empType,
@@ -379,27 +390,27 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel'),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
                       ),
                     ),
-                    child: const Text('Add Staff'),
+                    child: Text('Add Staff'),
                   ),
                 ],
               ),
@@ -413,16 +424,20 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
   InputDecoration _inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
+      prefixIcon: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.primary,
+        size: 20,
+      ),
       filled: true,
-      fillColor: AppTheme.background,
+      fillColor: Theme.of(context).scaffoldBackgroundColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppTheme.border),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppTheme.border),
+        borderSide: BorderSide(color: Theme.of(context).dividerColor),
       ),
     );
   }
@@ -458,6 +473,7 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
         SnackBar(
           content: Text('$name added successfully!'),
           backgroundColor: AppTheme.success,
+          behavior: SnackBarBehavior.floating,
         ),
       );
 

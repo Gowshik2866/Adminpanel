@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
 
 class DonutChartPainter extends CustomPainter {
   final double value;
-  const DonutChartPainter({required this.value});
+  final Color backgroundColor;
+  final Color successColor;
+  final Color errorColor;
+  final Color warningColor;
+
+  const DonutChartPainter({
+    required this.value,
+    required this.backgroundColor,
+    required this.successColor,
+    required this.errorColor,
+    required this.warningColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -15,22 +25,23 @@ class DonutChartPainter extends CustomPainter {
       center,
       radius,
       Paint()
-        ..color = AppTheme.border.withValues(alpha: 0.5)
+        ..color = backgroundColor.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.round,
     );
 
     const gaps = [0.0, 0.89, 0.96, 1.0];
-    const colors = [AppTheme.success, AppTheme.danger, AppTheme.warning];
+    final colors = [successColor, errorColor, warningColor];
 
     for (int i = 0; i < 3; i++) {
-      final start = gaps[i] * 2 * 3.14159;
-      final sweep = (gaps[i + 1] - gaps[i]) * 2 * 3.14159;
+      final startAngle = -3.14159 / 2 + gaps[i] * 2 * 3.14159;
+      final sweepAngle = (gaps[i + 1] - gaps[i]) * 2 * 3.14159;
+
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
-        -3.14159 / 2 + start,
-        sweep,
+        startAngle,
+        sweepAngle,
         false,
         Paint()
           ..color = colors[i]
@@ -43,5 +54,9 @@ class DonutChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(DonutChartPainter oldDelegate) =>
-      oldDelegate.value != value;
+      oldDelegate.value != value ||
+      oldDelegate.backgroundColor != backgroundColor ||
+      oldDelegate.successColor != successColor ||
+      oldDelegate.errorColor != errorColor ||
+      oldDelegate.warningColor != warningColor;
 }

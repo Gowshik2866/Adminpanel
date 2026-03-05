@@ -4,7 +4,6 @@ import 'package:sample_app/screen/leave_requests_screen.dart';
 import 'package:sample_app/screen/report_screen.dart';
 import 'package:sample_app/screen/settings_screen.dart';
 import 'package:sample_app/screen/users_screen.dart';
-import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/app_sidebar.dart';
 import 'package:sample_app/widgets/top_header.dart';
 
@@ -29,7 +28,7 @@ class AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           const TopHeader(),
