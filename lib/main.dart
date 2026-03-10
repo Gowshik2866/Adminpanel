@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample_app/providers/auth_provider.dart';
+import 'package:sample_app/screen/login_screen.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/app_shell.dart';
 import 'package:sample_app/providers/theme_provider.dart';
@@ -23,6 +25,7 @@ class StaffAdminApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider);
+    final user = ref.watch(authProvider);
 
     return MaterialApp(
       title: 'College Staff Portal',
@@ -30,7 +33,10 @@ class StaffAdminApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-      home: const AppShell(),
+      // Route: unauthenticated → LoginScreen, authenticated → AppShell.
+      // LoginScreen uses pushReplacement so the back button from AppShell
+      // never returns to the login page.
+      home: user == null ? const LoginScreen() : const AppShell(),
     );
   }
 }

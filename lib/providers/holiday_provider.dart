@@ -15,14 +15,20 @@ class HolidayNotifier extends StateNotifier<List<Holiday>> {
           id: 'h-1',
           title: 'New Year',
           description: 'Happy New Year!',
-          date: DateTime(DateTime.now().year, 1, 1),
+          startDate: DateTime(DateTime.now().year, 1, 1),
+          endDate: DateTime(DateTime.now().year, 1, 1),
           department: 'All',
         ),
         Holiday(
           id: 'h-2',
           title: 'Today Holiday',
           description: 'A mock holiday for today',
-          date: DateTime(
+          startDate: DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+          ),
+          endDate: DateTime(
             DateTime.now().year,
             DateTime.now().month,
             DateTime.now().day,
@@ -34,7 +40,8 @@ class HolidayNotifier extends StateNotifier<List<Holiday>> {
   void addHoliday(
     String title,
     String description,
-    DateTime date,
+    DateTime startDate,
+    DateTime endDate,
     String department,
   ) {
     state = [
@@ -43,7 +50,8 @@ class HolidayNotifier extends StateNotifier<List<Holiday>> {
         id: _uuid.v4(),
         title: title,
         description: description,
-        date: date,
+        startDate: startDate,
+        endDate: endDate,
         department: department,
       ),
     ];
@@ -61,13 +69,23 @@ class HolidayNotifier extends StateNotifier<List<Holiday>> {
   }
 
   bool isHoliday(DateTime date, String department) {
-    return state.any(
-      (h) =>
-          h.date.year == date.year &&
-          h.date.month == date.month &&
-          h.date.day == date.day &&
-          (h.department == 'All' || h.department == department),
-    );
+    return state.any((h) {
+      final dateOnly = DateTime(date.year, date.month, date.day);
+      final startOnly = DateTime(
+        h.startDate.year,
+        h.startDate.month,
+        h.startDate.day,
+      );
+      final endOnly = DateTime(h.endDate.year, h.endDate.month, h.endDate.day);
+
+      final isDateMatch =
+          dateOnly.isAtSameMomentAs(startOnly) ||
+          dateOnly.isAtSameMomentAs(endOnly) ||
+          (dateOnly.isAfter(startOnly) && dateOnly.isBefore(endOnly));
+
+      return isDateMatch &&
+          (h.department == 'All' || h.department == department);
+    });
   }
 
   // Called by other modules to optionally prevent leave

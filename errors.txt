@@ -1,0 +1,25 @@
+﻿Analyzing login_screen.dart, signup_screen.dart...
+
+  error - lib\screen\login_screen.dart:201:71 - Expected an identifier. - missing_identifier
+  error - lib\screen\login_screen.dart:201:71 - The getter '40' isn't defined for the type 'bool'. Try importing the library that defines '40', correcting the name to the name of an existing getter, or defining a getter or field named '40'. - undefined_getter
+  error - lib\screen\login_screen.dart:201:73 - Expected to find ')'. - expected_token
+  error - lib\screen\login_screen.dart:663:57 - Expected an identifier. - missing_identifier
+  error - lib\screen\login_screen.dart:663:57 - The getter '28' isn't defined for the type 'bool'. Try importing the library that defines '28', correcting the name to the name of an existing getter, or defining a getter or field named '28'. - undefined_getter
+  error - lib\screen\login_screen.dart:663:59 - Expected to find ')'. - expected_token
+  error - lib\screen\signup_screen.dart:200:69 - Expected an identifier. - missing_identifier
+  error - lib\screen\signup_screen.dart:200:69 - The getter '40' isn't defined for the type 'bool'. Try importing the library that defines '40', correcting the name to the name of an existing getter, or defining a getter or field named '40'. - undefined_getter
+  error - lib\screen\signup_screen.dart:200:71 - Expected to find ')'. - expected_token
+  error - lib\screen\signup_screen.dart:672:57 - Expected an identifier. - missing_identifier
+  error - lib\screen\signup_screen.dart:672:57 - The getter '28' isn't defined for the type 'bool'. Try importing the library that defines '28', correcting the name to the name of an existing getter, or defining a getter or field named '28'. - undefined_getter
+  error - lib\screen\signup_screen.dart:672:59 - Expected to find ')'. - expected_token
+warning - lib\screen\login_screen.dart:201:69 - The receiver can't be null, so the null-aware operator '?.' is unnecessary. Try replacing the operator '?.' with '.'. - invalid_null_aware_operator
+warning - lib\screen\login_screen.dart:437:7 - The declaration '_AuthDropdown' isn't referenced. Try removing the declaration of '_AuthDropdown'. - unused_element
+warning - lib\screen\login_screen.dart:453:10 - A value for optional parameter 'validator' isn't ever given. Try removing the unused parameter. - unused_element_parameter
+warning - lib\screen\login_screen.dart:663:55 - The receiver can't be null, so the null-aware operator '?.' is unnecessary. Try replacing the operator '?.' with '.'. - invalid_null_aware_operator
+warning - lib\screen\signup_screen.dart:200:67 - The receiver can't be null, so the null-aware operator '?.' is unnecessary. Try replacing the operator '?.' with '.'. - invalid_null_aware_operator
+warning - lib\screen\signup_screen.dart:419:10 - A value for optional parameter 'onSubmitted' isn't ever given. Try removing the unused parameter. - unused_element_parameter
+warning - lib\screen\signup_screen.dart:672:55 - The receiver can't be null, so the null-aware operator '?.' is unnecessary. Try replacing the operator '?.' with '.'. - invalid_null_aware_operator
+   info - lib\screen\login_screen.dart:460:7 - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - lib\screen\signup_screen.dart:489:7 - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+
+21 issues found.

@@ -17,6 +17,10 @@ class AppShell extends StatefulWidget {
 class AppShellState extends State<AppShell> {
   int navIndex = 0;
 
+  void setNavIndex(int index) {
+    if (mounted) setState(() => navIndex = index);
+  }
+
   static const List<Widget> _screens = [
     DashboardScreen(),
     UsersScreen(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const primary = Color.fromARGB(255, 19, 109, 236);
+  static const primary = Color(0xFF2563EB); // RGB(37, 99, 235) — exact
   static const primaryLight = Color(0xFFEBF2FF);
   static const background = Color(0xFFF4F6FB);
   static const surface = Color(0xFFFFFFFF);
@@ -17,8 +17,13 @@ class AppTheme {
   static const danger = Color(0xFFEF4444); // < 80%
   static const dangerLight = Color(0xFFFEE2E2);
 
-  static const shadowColor = Color(0x1A1E6FFF);
-  static const List<BoxShadow> cardShadow = [
+  static final shadowColor = const Color.fromRGBO(
+    19,
+    109,
+    236,
+    1,
+  ).withValues(alpha: 0.10);
+  static final List<BoxShadow> cardShadow = [
     BoxShadow(color: shadowColor, blurRadius: 18, offset: Offset(0, 4)),
   ];
 
@@ -33,11 +38,9 @@ class AppTheme {
       surface: surface,
       onSurface: textPrimary,
       onSurfaceVariant: textSecondary,
-      primaryContainer: primaryLight,
-      onPrimaryContainer: primary,
       error: danger,
       errorContainer: dangerLight,
-    ),
+    ).copyWith(primary: primary),
     scaffoldBackgroundColor: background,
     fontFamily: 'Segoe UI',
     cardTheme: CardThemeData(
@@ -57,11 +60,9 @@ class AppTheme {
       surface: const Color(0xFF1E293B),
       onSurface: const Color(0xFFF1F5F9),
       onSurfaceVariant: const Color(0xFF94A3B8),
-      primaryContainer: const Color(0xFF1E3A8A),
-      onPrimaryContainer: const Color(0xFFBFDBFE),
       error: const Color(0xFFEF4444),
       errorContainer: const Color(0xFF450A0A),
-    ),
+    ).copyWith(primary: primary),
     scaffoldBackgroundColor: const Color(0xFF0F172A),
     fontFamily: 'Segoe UI',
     cardTheme: CardThemeData(

@@ -2,14 +2,16 @@ class Holiday {
   final String id;
   final String title;
   final String description;
-  final DateTime date;
+  final DateTime startDate;
+  final DateTime endDate;
   final String department;
 
   const Holiday({
     required this.id,
     required this.title,
     required this.description,
-    required this.date,
+    required this.startDate,
+    required this.endDate,
     required this.department,
   });
 
@@ -17,14 +19,16 @@ class Holiday {
     String? id,
     String? title,
     String? description,
-    DateTime? date,
+    DateTime? startDate,
+    DateTime? endDate,
     String? department,
   }) {
     return Holiday(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
-      date: date ?? this.date,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
       department: department ?? this.department,
     );
   }

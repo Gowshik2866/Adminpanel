@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample_app/providers/dashboard_provider.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/chart_legend.dart';
 import 'package:sample_app/widgets/donut_chart_painter.dart';
 
-class AttendanceDonutCard extends StatelessWidget {
+class AttendanceDonutCard extends ConsumerWidget {
   const AttendanceDonutCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final metrics = ref.watch(filteredDashboardMetricsProvider);
+
+    // Calculate the rates
+    final total = metrics.totalStaff;
+    final present = metrics.presentToday;
+    final absent = metrics.absentToday;
+
+    // Ensure total isn't 0
+    double rate = total > 0 ? present / total : 0;
+
+    String presentPct = total > 0
+        ? '${(present / total * 100).round()}%'
+        : '0%';
+    String absentPct = total > 0 ? '${(absent / total * 100).round()}%' : '0%';
+    String latePct = total > 0
+        ? '${((total - present - absent) / total * 100).round()}%'
+        : '0%'; // Roughly mapping leftover to late
+
     return Container(
       padding: EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -34,7 +54,7 @@ class AttendanceDonutCard extends StatelessWidget {
               height: 180,
               child: CustomPaint(
                 painter: DonutChartPainter(
-                  value: 0.89,
+                  value: rate,
                   backgroundColor: Theme.of(context).dividerColor,
                   successColor: AppTheme.success,
                   errorColor: Theme.of(context).colorScheme.error,
@@ -45,7 +65,7 @@ class AttendanceDonutCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '89%',
+                        '${(rate * 100).round()}%',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 32,
@@ -71,19 +91,19 @@ class AttendanceDonutCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 32),
-          const ChartLegend(
+          ChartLegend(
             color: AppTheme.success,
             label: 'Present',
-            pct: '89%',
+            pct: presentPct,
           ),
           SizedBox(height: 12),
           ChartLegend(
             color: Theme.of(context).colorScheme.error,
             label: 'Absent',
-            pct: '7%',
+            pct: absentPct,
           ),
           SizedBox(height: 12),
-          ChartLegend(color: AppTheme.warning, label: 'Late', pct: '4%'),
+          ChartLegend(color: AppTheme.warning, label: 'Late', pct: latePct),
         ],
       ),
     );

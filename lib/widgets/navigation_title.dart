@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/navigation_item_data.dart';
 
 class NavigationTile extends StatefulWidget {
@@ -29,10 +28,14 @@ class NavigationTileState extends State<NavigationTile> {
   Widget build(BuildContext context) {
     final tc =
         widget.textColor ??
-        (widget.selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant);
+        (widget.selected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurfaceVariant);
     final ic =
         widget.iconColor ??
-        (widget.selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5));
+        (widget.selected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5));
 
     return MouseRegion(
       onEnter: (_) => setState(() => hover = true),
@@ -47,7 +50,9 @@ class NavigationTileState extends State<NavigationTile> {
           decoration: BoxDecoration(
             color: widget.selected
                 ? Theme.of(context).colorScheme.primaryContainer
-                : (hover ? Theme.of(context).scaffoldBackgroundColor : Colors.transparent),
+                : (hover
+                      ? Theme.of(context).scaffoldBackgroundColor
+                      : Colors.transparent),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(

@@ -24,8 +24,33 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
       return deptMatch;
     }).toList();
 
-    filtered.sort((a, b) => a.date.compareTo(b.date));
+    filtered.sort((a, b) => a.startDate.compareTo(b.startDate));
     return filtered;
+  }
+
+  String _formatDateRange(DateTime start, DateTime end) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    String startStr = '${start.day} ${months[start.month - 1]}';
+    String endStr = '${end.day} ${months[end.month - 1]}';
+    if (start.year == end.year &&
+        start.month == end.month &&
+        start.day == end.day) {
+      return startStr;
+    }
+    return '$startStr – $endStr';
   }
 
   void _showHolidayForm({Holiday? existing}) {
@@ -33,7 +58,8 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
     final descController = TextEditingController(
       text: existing?.description ?? '',
     );
-    DateTime selectedDate = existing?.date ?? DateTime.now();
+    DateTime selectedStartDate = existing?.startDate ?? DateTime.now();
+    DateTime selectedEndDate = existing?.endDate ?? DateTime.now();
     String selectedDept = existing?.department ?? 'All';
 
     showDialog(
@@ -61,22 +87,28 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
                     SizedBox(height: 16),
                     Row(
                       children: [
-                        Text('Date:'),
+                        Text('Dates:'),
                         SizedBox(width: 16),
                         TextButton(
                           onPressed: () async {
-                            final picked = await showDatePicker(
+                            final picked = await showDateRangePicker(
                               context: ctx,
-                              initialDate: selectedDate,
+                              initialDateRange: DateTimeRange(
+                                start: selectedStartDate,
+                                end: selectedEndDate,
+                              ),
                               firstDate: DateTime(2000),
                               lastDate: DateTime(2100),
                             );
                             if (picked != null) {
-                              setDialogState(() => selectedDate = picked);
+                              setDialogState(() {
+                                selectedStartDate = picked.start;
+                                selectedEndDate = picked.end;
+                              });
                             }
                           },
                           child: Text(
-                            '${selectedDate.toLocal()}'.split(' ')[0],
+                            '${'${selectedStartDate.toLocal()}'.split(' ')[0]} to ${'${selectedEndDate.toLocal()}'.split(' ')[0]}',
                           ),
                         ),
                       ],
@@ -111,7 +143,8 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
                       notifier.addHoliday(
                         titleController.text,
                         descController.text,
-                        selectedDate,
+                        selectedStartDate,
+                        selectedEndDate,
                         selectedDept,
                       );
                     } else {
@@ -119,7 +152,8 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
                         existing.copyWith(
                           title: titleController.text,
                           description: descController.text,
-                          date: selectedDate,
+                          startDate: selectedStartDate,
+                          endDate: selectedEndDate,
                           department: selectedDept,
                         ),
                       );
@@ -226,7 +260,7 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
                             Text(h.description),
                             SizedBox(height: 4),
                             Text(
-                              '${h.date.year}-${h.date.month.toString().padLeft(2, '0')}-${h.date.day.toString().padLeft(2, '0')} • Dept: ${h.department}',
+                              '${_formatDateRange(h.startDate, h.endDate)} • Dept: ${h.department}',
                               style: TextStyle(
                                 color: Theme.of(
                                   context,

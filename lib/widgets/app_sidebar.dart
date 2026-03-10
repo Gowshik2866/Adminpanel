@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/widgets/navigation_item_data.dart';
 import 'package:sample_app/widgets/navigation_title.dart';
+import 'package:sample_app/providers/auth_provider.dart';
+import 'package:sample_app/screen/login_screen.dart';
 
-class AppSidebar extends StatelessWidget {
+class AppSidebar extends ConsumerWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemSelected;
 
@@ -24,7 +27,7 @@ class AppSidebar extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: 240,
       decoration: BoxDecoration(
@@ -60,7 +63,12 @@ class AppSidebar extends StatelessWidget {
                 label: 'Logout',
               ),
               selected: false,
-              onTap: () {}, // Single consistent logout location
+              onTap: () {
+                ref.read(authProvider.notifier).logout();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
               textColor: Theme.of(context).colorScheme.error,
               iconColor: Theme.of(context).colorScheme.error,
             ),
