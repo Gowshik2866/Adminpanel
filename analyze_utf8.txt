@@ -1,0 +1,12 @@
+﻿Analyzing sample_app...                                         
+
+warning - The declaration '_kDarkBlue' isn't referenced - lib\features\auth\presentation\screens\login_screen.dart:18:7 - unused_element
+warning - The declaration '_kLightPanel' isn't referenced - lib\features\auth\presentation\screens\login_screen.dart:22:7 - unused_element
+warning - The declaration '_kDarkPanel' isn't referenced - lib\features\auth\presentation\screens\login_screen.dart:31:7 - unused_element
+  error - The modifier 'static' was already specified - lib\features\auth\presentation\screens\login_screen.dart:765:3 - duplicated_modifier
+warning - The declaration '_kDarkBlue' isn't referenced - lib\features\auth\presentation\screens\signup_screen.dart:19:7 - unused_element
+warning - The declaration '_kLightPanel' isn't referenced - lib\features\auth\presentation\screens\signup_screen.dart:23:7 - unused_element
+warning - The declaration '_kDarkPanel' isn't referenced - lib\features\auth\presentation\screens\signup_screen.dart:32:7 - unused_element
+  error - There's no constant named 'staff' in 'Role' - lib\features\auth\presentation\screens\signup_screen.dart:109:18 - undefined_enum_constant
+  error - The modifier 'static' was already specified - lib\features\auth\presentation\screens\signup_screen.dart:792:3 - duplicated_modifier
+

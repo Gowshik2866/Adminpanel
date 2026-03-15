@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:sample_app/core/enums.dart';
-import 'package:sample_app/models/staff.dart';
-import 'package:sample_app/models/attendance.dart';
-import 'package:sample_app/models/leave_request.dart';
-import 'package:sample_app/models/system_settings.dart';
+import 'package:sample_app/features/staff/domain/entities/staff.dart';
+import 'package:sample_app/features/attendance/domain/entities/attendance.dart';
+import 'package:sample_app/features/leave/domain/entities/leave_request.dart';
+import 'package:sample_app/features/settings/domain/entities/system_settings.dart';
 import 'package:uuid/uuid.dart';
 
 class MockData {
@@ -175,3 +175,4 @@ class MockData {
     ),
   ];
 }
+

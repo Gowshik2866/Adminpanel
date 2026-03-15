@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/screen/dashboard_screen.dart';
-import 'package:sample_app/screen/leave_requests_screen.dart';
-import 'package:sample_app/screen/report_screen.dart';
-import 'package:sample_app/screen/settings_screen.dart';
-import 'package:sample_app/screen/users_screen.dart';
+import 'package:sample_app/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:sample_app/features/leave/presentation/screens/leave_requests_screen.dart';
+import 'package:sample_app/features/reports/presentation/screens/report_screen.dart';
+import 'package:sample_app/features/settings/presentation/screens/settings_screen.dart';
+import 'package:sample_app/features/staff/presentation/screens/users_screen.dart';
 import 'package:sample_app/widgets/app_sidebar.dart';
 import 'package:sample_app/widgets/top_header.dart';
 
@@ -61,3 +61,4 @@ class AppShellState extends State<AppShell> {
     );
   }
 }
+

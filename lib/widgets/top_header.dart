@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/theme/app_theme.dart';
-import 'package:sample_app/providers/auth_provider.dart';
+import 'package:sample_app/features/auth/presentation/auth_notifier.dart';
 
 class TopHeader extends ConsumerWidget {
   const TopHeader({super.key});

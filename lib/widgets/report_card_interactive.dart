@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/animated_hover_card.dart';
 
 class ReportCardInteractive extends StatefulWidget {

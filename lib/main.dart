@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sample_app/providers/auth_provider.dart';
-import 'package:sample_app/screen/login_screen.dart';
+import 'package:sample_app/features/auth/presentation/auth_notifier.dart';
+import 'package:sample_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/app_shell.dart';
-import 'package:sample_app/providers/theme_provider.dart';
+import 'package:sample_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:sample_app/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
@@ -68,3 +74,4 @@ class StaffAdminApp extends ConsumerWidget {
 // -------------------------------------------------------------
 // SETTINGS SCREEN (Redesigned Hierarchy)
 // -------------------------------------------------------------
+
