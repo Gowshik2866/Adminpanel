@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_underscores, curly_braces_in_flow_control_structures
 
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/features/auth/presentation/auth_notifier.dart';
@@ -12,23 +11,23 @@ import 'package:sample_app/widgets/app_shell.dart';
 // Design Tokens
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const _kBlue        = Color(0xFF2563EB); // primary brand blue
+const _kBlue = Color(0xFF2563EB); // primary brand blue
 // Light palette
-const _kLightBg     = Color(0xFFF8FAFC); // clean white/soft gray
-const _kLightPanel  = Color(0xFFF1F5F9); 
-const _kLightCard   = Color(0xFFFFFFFF);
-const _kLightInput  = Color(0xFFFFFFFF);
+const _kLightBg = Color(0xFFF8FAFC); // clean white/soft gray
+const _kLightPanel = Color(0xFFF1F5F9);
+const _kLightCard = Color(0xFFFFFFFF);
+const _kLightInput = Color(0xFFFFFFFF);
 const _kLightInputB = Color(0xFFE2E8F0);
-const _kLightText   = Color(0xFF0F172A);
-const _kLightSub    = Color(0xFF64748B);
+const _kLightText = Color(0xFF0F172A);
+const _kLightSub = Color(0xFF64748B);
 
 // Dark palette
-const _kDarkBg      = Color(0xFF0B1120); // deep navy
-const _kDarkCard    = Color(0xFF1E293B); // lighter card surface
-const _kDarkInput   = Color(0xFF0F172A);
-const _kDarkInputB  = Color(0xFF334155);
-const _kDarkText    = Color(0xFFF8FAFC);
-const _kDarkSub     = Color(0xFF94A3B8);
+const _kDarkBg = Color(0xFF0B1120); // deep navy
+const _kDarkCard = Color(0xFF1E293B); // lighter card surface
+const _kDarkInput = Color(0xFF0F172A);
+const _kDarkInputB = Color(0xFF334155);
+const _kDarkText = Color(0xFFF8FAFC);
+const _kDarkSub = Color(0xFF94A3B8);
 
 // ── Typography factory ────────────────────────────────────────────────────────
 
@@ -59,26 +58,31 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen>
     with SingleTickerProviderStateMixin {
-  final _formKey      = GlobalKey<FormState>();
-  final _emailCtrl    = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
 
-  bool _obscure   = true;
-  bool _remember  = false;
-  bool _loading   = false;
+  bool _obscure = true;
+  bool _remember = false;
+  bool _loading = false;
   String? _error;
 
   late final AnimationController _anim;
-  late final Animation<double>   _cardFade;
-  late final Animation<Offset>   _cardSlide;
+  late final Animation<double> _cardFade;
+  late final Animation<Offset> _cardSlide;
 
   @override
   void initState() {
     super.initState();
-    _anim = AnimationController(vsync: this, duration: const Duration(milliseconds: 560));
-    _cardFade  = CurvedAnimation(parent: _anim, curve: Curves.easeOut);
-    _cardSlide = Tween<Offset>(begin: const Offset(0, .035), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic));
+    _anim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 560),
+    );
+    _cardFade = CurvedAnimation(parent: _anim, curve: Curves.easeOut);
+    _cardSlide = Tween<Offset>(
+      begin: const Offset(0, .035),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic));
     _anim.forward();
   }
 
@@ -94,18 +98,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     setState(() => _error = null);
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    final err = await ref.read(authProvider.notifier).login(_emailCtrl.text, _passwordCtrl.text);
+    final err = await ref
+        .read(authProvider.notifier)
+        .login(_emailCtrl.text, _passwordCtrl.text);
     if (!mounted) return;
     setState(() => _loading = false);
     if (err == null) {
-      Navigator.of(context).pushReplacement(PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const AppShell(),
-        transitionsBuilder: (_, a, __, c) => FadeTransition(
-          opacity: CurvedAnimation(parent: a, curve: Curves.easeIn),
-          child: c,
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const AppShell(),
+          transitionsBuilder: (_, a, __, c) => FadeTransition(
+            opacity: CurvedAnimation(parent: a, curve: Curves.easeIn),
+            child: c,
+          ),
+          transitionDuration: const Duration(milliseconds: 380),
         ),
-        transitionDuration: const Duration(milliseconds: 380),
-      ));
+      );
     } else {
       setState(() => _error = err);
     }
@@ -116,11 +124,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final isDark = ref.watch(themeProvider);
 
     final rightBg = isDark ? _kDarkBg : _kLightBg;
-    final cardBg  = isDark ? _kDarkCard : _kLightCard;
+    final cardBg = isDark ? _kDarkCard : _kLightCard;
     final inputBg = isDark ? _kDarkInput : _kLightInput;
-    final inputB  = isDark ? _kDarkInputB : _kLightInputB;
-    final txtCol  = isDark ? _kDarkText : _kLightText;
-    final subCol  = isDark ? _kDarkSub : _kLightSub;
+    final inputB = isDark ? _kDarkInputB : _kLightInputB;
+    final txtCol = isDark ? _kDarkText : _kLightText;
+    final subCol = isDark ? _kDarkSub : _kLightSub;
 
     return Scaffold(
       backgroundColor: rightBg,
@@ -134,10 +142,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               // ═══════════════════════════════════════════════════════════
               // LEFT PANEL (55%) — Branding & Illustration
               // ═══════════════════════════════════════════════════════════
-              Expanded(
-                flex: 55,
-                child: _LeftPanel(isDark: isDark),
-              ),
+              Expanded(flex: 55, child: _LeftPanel(isDark: isDark)),
 
               // ═══════════════════════════════════════════════════════════
               // RIGHT PANEL (45%) — Login Card
@@ -164,11 +169,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   onToggleObscure: () => setState(() => _obscure = !_obscure),
                   onRemember: (v) => setState(() => _remember = v ?? false),
                   onSubmit: _submit,
-                  onSignUp: () => Navigator.of(context).pushReplacement(PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => const SignUpScreen(),
-                    transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
-                    transitionDuration: const Duration(milliseconds: 280),
-                  )),
+                  onSignUp: () => Navigator.of(context).pushReplacement(
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => const SignUpScreen(),
+                      transitionsBuilder: (_, a, __, c) =>
+                          FadeTransition(opacity: a, child: c),
+                      transitionDuration: const Duration(milliseconds: 280),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -203,13 +211,20 @@ class _LeftPanel extends StatelessWidget {
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF0F172A), Color(0xFF080F1A), Color(0xFF131D33)],
+                colors: [
+                  Color(0xFF0F172A),
+                  Color(0xFF080F1A),
+                  Color(0xFF131D33),
+                ],
                 stops: [0.0, 0.5, 1.0],
               )
             : LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [const Color(0xFF2563EB).withValues(alpha: .03), const Color(0xFF3B82F6).withValues(alpha: .06)],
+                colors: [
+                  const Color(0xFF2563EB).withValues(alpha: .03),
+                  const Color(0xFF3B82F6).withValues(alpha: .06),
+                ],
               ),
       ),
       child: Stack(
@@ -263,7 +278,9 @@ class _LeftPanel extends StatelessWidget {
                   'Efficient Staff Management & Administration Platform.\nManage staff, leave records, attendance, and reports efficiently.',
                   style: _t(
                     size: 15,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF475569),
                     lh: 1.6,
                   ),
                 ),
@@ -272,9 +289,22 @@ class _LeftPanel extends StatelessWidget {
                 // Illustration
                 Expanded(
                   child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 500, maxHeight: 400),
-                      child: CustomPaint(painter: _OfficeIllustrationPainter(isDark: isDark)),
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20),
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Transform.scale(
+                        scale: 1.15,
+                        child: Image.asset(
+                          isDark
+                              ? 'assets/images/office_illustration_dark.png'
+                              : 'assets/images/office_illustration.png',
+                          width: 620,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -309,7 +339,11 @@ class _LogoBadge extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(Icons.dashboard_rounded, color: Colors.white, size: 28),
+          child: const Icon(
+            Icons.dashboard_rounded,
+            color: Colors.white,
+            size: 28,
+          ),
         ),
       ],
     );
@@ -367,31 +401,45 @@ class _RightPanel extends StatelessWidget {
             child: SlideTransition(
               position: cardSlide,
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 520), // 520px width as requested
+                constraints: const BoxConstraints(
+                  maxWidth: 520,
+                ), // 520px width as requested
                 decoration: BoxDecoration(
                   color: cardBg,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.3 : 0.05,
+                      ),
                       blurRadius: 24,
                       spreadRadius: isDark ? 0 : 4,
                       offset: const Offset(0, 8),
                     ),
                   ],
                   border: Border.all(
-                    color: isDark ? Colors.white.withValues(alpha: .05) : Colors.black.withValues(alpha: .05),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: .05)
+                        : Colors.black.withValues(alpha: .05),
                     width: 1,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 48),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 48,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
                       'Welcome Back',
-                      style: _t(size: 28, weight: FontWeight.w700, color: txtCol, ls: -0.5),
+                      style: _t(
+                        size: 28,
+                        weight: FontWeight.w700,
+                        color: txtCol,
+                        ls: -0.5,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -410,7 +458,10 @@ class _RightPanel extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _FieldLabel(label: 'Email / Username', txtCol: txtCol),
+                          _FieldLabel(
+                            label: 'Email / Username',
+                            txtCol: txtCol,
+                          ),
                           const SizedBox(height: 8),
                           _InputField(
                             controller: emailCtrl,
@@ -421,7 +472,8 @@ class _RightPanel extends StatelessWidget {
                             txtCol: txtCol,
                             subCol: subCol,
                             keyboardType: TextInputType.emailAddress,
-                            validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Required' : null,
                             onSubmitted: (_) => onSubmit(),
                           ),
                           const SizedBox(height: 24),
@@ -438,7 +490,8 @@ class _RightPanel extends StatelessWidget {
                             subCol: subCol,
                             obscureText: obscure,
                             onToggleObscure: onToggleObscure,
-                            validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Required' : null,
                             onSubmitted: (_) => onSubmit(),
                           ),
                           const SizedBox(height: 20),
@@ -455,14 +508,23 @@ class _RightPanel extends StatelessWidget {
                                       value: remember,
                                       onChanged: onRemember,
                                       activeColor: _kBlue,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                      side: BorderSide(color: subCol.withValues(alpha: .5), width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      side: BorderSide(
+                                        color: subCol.withValues(alpha: .5),
+                                        width: 1.5,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Remember Me',
-                                    style: _t(size: 14, color: subCol, weight: FontWeight.w500),
+                                    style: _t(
+                                      size: 14,
+                                      color: subCol,
+                                      weight: FontWeight.w500,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -486,7 +548,10 @@ class _RightPanel extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Don't have an account? ", style: _t(size: 14, color: subCol)),
+                          Text(
+                            "Don't have an account? ",
+                            style: _t(size: 14, color: subCol),
+                          ),
                           _HoverLink(
                             text: 'Sign Up',
                             color: _kBlue,
@@ -517,9 +582,9 @@ class _FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        label,
-        style: _t(size: 14, weight: FontWeight.w600, color: txtCol),
-      );
+    label,
+    style: _t(size: 14, weight: FontWeight.w600, color: txtCol),
+  );
 }
 
 class _HoverLink extends StatefulWidget {
@@ -552,14 +617,19 @@ class _HoverLinkState extends State<_HoverLink> {
         onTap: widget.onTap,
         child: AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 150),
-          style: _t(
-            size: 14,
-            color: _hover ? widget.color.withValues(alpha: .8) : widget.color,
-            weight: widget.weight,
-          ).copyWith(
-            decoration: widget.underline || _hover ? TextDecoration.underline : TextDecoration.none,
-            decorationColor: widget.color,
-          ),
+          style:
+              _t(
+                size: 14,
+                color: _hover
+                    ? widget.color.withValues(alpha: .8)
+                    : widget.color,
+                weight: widget.weight,
+              ).copyWith(
+                decoration: widget.underline || _hover
+                    ? TextDecoration.underline
+                    : TextDecoration.none,
+                decorationColor: widget.color,
+              ),
           child: Text(widget.text),
         ),
       ),
@@ -614,7 +684,13 @@ class _InputFieldState extends State<_InputField> {
             width: _focus ? 2 : 1,
           ),
           boxShadow: _focus
-              ? [BoxShadow(color: _kBlue.withValues(alpha: .15), blurRadius: 8, spreadRadius: 1)]
+              ? [
+                  BoxShadow(
+                    color: _kBlue.withValues(alpha: .15),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ]
               : [],
         ),
         child: TextFormField(
@@ -631,14 +707,19 @@ class _InputFieldState extends State<_InputField> {
             suffixIcon: widget.onToggleObscure != null
                 ? IconButton(
                     icon: Icon(
-                      widget.obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      widget.obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       color: widget.subCol,
                       size: 20,
                     ),
                     onPressed: widget.onToggleObscure,
                   )
                 : null,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             border: InputBorder.none,
           ),
           validator: widget.validator,
@@ -660,16 +741,26 @@ class _ErrorBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFFEF4444).withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline_rounded, size: 18, color: Color(0xFFEF4444)),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 18,
+            color: Color(0xFFEF4444),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
-              style: _t(size: 14, color: const Color(0xFFEF4444), weight: FontWeight.w500),
+              style: _t(
+                size: 14,
+                color: const Color(0xFFEF4444),
+                weight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -724,12 +815,21 @@ class _LoginButtonState extends State<_LoginButton> {
             child: Center(
               child: widget.loading
                   ? const SizedBox(
-                      width: 22, height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
                     )
                   : Text(
                       'Login',
-                      style: _t(size: 16, weight: FontWeight.w600, color: Colors.white, ls: 0.5),
+                      style: _t(
+                        size: 16,
+                        weight: FontWeight.w600,
+                        color: Colors.white,
+                        ls: 0.5,
+                      ),
                     ),
             ),
           ),
@@ -757,7 +857,8 @@ class _ThemeToggleState extends State<_ThemeToggle> {
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
-        onTap: () => widget.ref.read(themeProvider.notifier).toggleTheme(!widget.isDark),
+        onTap: () =>
+            widget.ref.read(themeProvider.notifier).toggleTheme(!widget.isDark),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -765,19 +866,31 @@ class _ThemeToggleState extends State<_ThemeToggle> {
             color: widget.isDark ? const Color(0xFF1E293B) : Colors.white,
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: widget.isDark ? Colors.white.withValues(alpha: .1) : Colors.black.withValues(alpha: .05),
+              color: widget.isDark
+                  ? Colors.white.withValues(alpha: .1)
+                  : Colors.black.withValues(alpha: .05),
             ),
             boxShadow: _hover
-                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2))]
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
                 : [],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                widget.isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                widget.isDark
+                    ? Icons.dark_mode_rounded
+                    : Icons.light_mode_rounded,
                 size: 18,
-                color: widget.isDark ? const Color(0xFF93C5FD) : const Color(0xFFF59E0B),
+                color: widget.isDark
+                    ? const Color(0xFF93C5FD)
+                    : const Color(0xFFF59E0B),
               ),
               const SizedBox(width: 8),
               Text(
@@ -794,70 +907,4 @@ class _ThemeToggleState extends State<_ThemeToggle> {
       ),
     );
   }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// OFFICE ILLUSTRATION
-// ═══════════════════════════════════════════════════════════════════════════════
-
-class _OfficeIllustrationPainter extends CustomPainter {
-  final bool isDark;
-  const _OfficeIllustrationPainter({required this.isDark});
-
-  @override
-  void paint(Canvas canvas, Size sz) {
-    final w = sz.width;
-    final h = sz.height;
-    final fill = Paint()..style = PaintingStyle.fill;
-    final stroke = Paint()..style = PaintingStyle.stroke..strokeCap = StrokeCap.round..strokeJoin = StrokeJoin.round;
-
-    final baseCol = isDark ? const Color(0xFF1E293B) : const Color(0xFFDBEAFE);
-    final accentCol = _kBlue;
-    final deskCol = isDark ? const Color(0xFF334155) : const Color(0xFFBFDBFE);
-    final skinCol = const Color(0xFFFDBA74);
-
-    fill.color = Colors.black.withValues(alpha: .05);
-    canvas.drawOval(Rect.fromCenter(center: Offset(w * .5, h * .95), width: w * .8, height: h * .06), fill);
-
-    // Desk
-    fill.color = deskCol;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .1, h * .65, w * .8, h * .04), const Radius.circular(4)), fill);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .15, h * .69, w * .03, h * .25), const Radius.circular(2)), fill);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .82, h * .69, w * .03, h * .25), const Radius.circular(2)), fill);
-
-    // Man Working
-    fill.color = baseCol;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .2, h * .4, w * .15, h * .25), const Radius.circular(10)), fill);
-    fill.color = skinCol;
-    canvas.drawCircle(Offset(w * .275, h * .3), w * .06, fill);
-    fill.color = const Color(0xFF0F172A);
-    canvas.drawArc(Rect.fromCenter(center: Offset(w * .275, h * .3), width: w * .12, height: w * .12), math.pi, math.pi, true, fill);
-
-    // Laptop
-    fill.color = accentCol;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .35, h * .45, w * .2, h * .2), const Radius.circular(6)), fill);
-    fill.color = Colors.white.withValues(alpha: .2);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .36, h * .46, w * .18, h * .15), const Radius.circular(4)), fill);
-
-    // Woman with Clipboard
-    fill.color = accentCol.withValues(alpha: .8);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .65, h * .35, w * .14, h * .3), const Radius.circular(12)), fill);
-    fill.color = skinCol;
-    canvas.drawCircle(Offset(w * .72, h * .25), w * .055, fill);
-    fill.color = const Color(0xFF6D28D9);
-    canvas.drawArc(Rect.fromCenter(center: Offset(w * .72, h * .25), width: w * .11, height: w * .11), math.pi, math.pi, true, fill);
-
-    // Clipboard
-    fill.color = deskCol;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .55, h * .45, w * .12, h * .15), const Radius.circular(4)), fill);
-    fill.color = Colors.white;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * .56, h * .46, w * .1, h * .13), const Radius.circular(2)), fill);
-    stroke.color = accentCol;
-    stroke.strokeWidth = 2;
-    canvas.drawLine(Offset(w * .58, h * .49), Offset(w * .63, h * .49), stroke);
-    canvas.drawLine(Offset(w * .58, h * .52), Offset(w * .64, h * .52), stroke);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
