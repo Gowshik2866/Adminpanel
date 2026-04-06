@@ -1,6 +1,7 @@
 import 'package:sample_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:sample_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:sample_app/features/auth/domain/entities/user.dart';
+import 'package:sample_app/features/auth/data/models/user_model.dart';
 import 'package:sample_app/core/enums.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -27,7 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     final credentials = await remoteDataSource.signUp(email, password);
     if (credentials.user != null) {
-      final newUser = User(
+      final newUser = UserModel(
         id: credentials.user!.uid,
         name: name,
         email: email.trim(),
@@ -47,7 +48,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<User?> getCurrentUser(String uid) async {
     final userData = await remoteDataSource.getUserData(uid);
     if (userData != null) {
-      return User.fromMap(userData);
+      return UserModel.fromMap(userData);
     }
     return null;
   }

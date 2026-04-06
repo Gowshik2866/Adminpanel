@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sample_app/features/auth/presentation/auth_notifier.dart';
+import 'package:sample_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:sample_app/features/settings/presentation/providers/theme_provider.dart';
 import 'package:sample_app/features/auth/presentation/screens/signup_screen.dart';
 import 'package:sample_app/widgets/app_shell.dart';

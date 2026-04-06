@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/widgets/navigation_item_data.dart';
 import 'package:sample_app/widgets/navigation_title.dart';
-import 'package:sample_app/features/auth/presentation/auth_notifier.dart';
+import 'package:sample_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:sample_app/features/auth/presentation/screens/login_screen.dart';
 
 class AppSidebar extends ConsumerWidget {

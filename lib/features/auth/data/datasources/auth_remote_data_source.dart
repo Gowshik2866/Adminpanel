@@ -1,13 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sample_app/features/auth/domain/entities/user.dart';
+
+import 'package:sample_app/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<firebase_auth.UserCredential> login(String email, String password);
   Future<firebase_auth.UserCredential> signUp(String email, String password);
   Future<void> logout();
   Future<Map<String, dynamic>?> getUserData(String uid);
-  Future<void> saveUserData(User user, String department);
+  Future<void> saveUserData(UserModel user, String department);
   Stream<firebase_auth.User?> get authStateChanges;
 }
 
@@ -41,7 +42,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> saveUserData(User user, String department) {
+  Future<void> saveUserData(UserModel user, String department) {
     return _db.collection('users').doc(user.id).set({
       ...user.toMap(),
       'department': department,

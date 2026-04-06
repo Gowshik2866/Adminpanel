@@ -6,6 +6,7 @@ import 'package:sample_app/features/auth/domain/repositories/auth_repository.dar
 import 'package:sample_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:sample_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:sample_app/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:sample_app/features/auth/domain/usecases/listen_auth_state_usecase.dart';
 import 'package:sample_app/features/auth/domain/entities/user.dart';
 import 'package:sample_app/core/enums.dart';
 
@@ -31,23 +32,27 @@ final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
   return LogoutUseCase(ref.watch(authRepositoryProvider));
 });
 
+final listenAuthStateUseCaseProvider = Provider<ListenAuthStateUseCase>((ref) {
+  return ListenAuthStateUseCase(ref.watch(authRepositoryProvider));
+});
+
 // ─── Auth Notifier ──────────────────────────────────────────────────────────
 
 class AuthNotifier extends StateNotifier<User?> {
   final LoginUseCase _loginUseCase;
   final SignUpUseCase _signUpUseCase;
   final LogoutUseCase _logoutUseCase;
-  final AuthRepository _repository;
+  final ListenAuthStateUseCase _listenAuthStateUseCase;
 
   AuthNotifier({
     required LoginUseCase loginUseCase,
     required SignUpUseCase signUpUseCase,
     required LogoutUseCase logoutUseCase,
-    required AuthRepository repository,
+    required ListenAuthStateUseCase listenAuthStateUseCase,
   })  : _loginUseCase = loginUseCase,
         _signUpUseCase = signUpUseCase,
         _logoutUseCase = logoutUseCase,
-        _repository = repository,
+        _listenAuthStateUseCase = listenAuthStateUseCase,
         super(null) {
     _listenToAuthState();
   }
@@ -56,7 +61,7 @@ class AuthNotifier extends StateNotifier<User?> {
   bool get isLoading => _loading;
 
   void _listenToAuthState() {
-    _repository.authStateChanges.listen((user) {
+    _listenAuthStateUseCase.execute().listen((user) {
       state = user;
     });
   }
@@ -108,6 +113,6 @@ final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
     loginUseCase: ref.watch(loginUseCaseProvider),
     signUpUseCase: ref.watch(signUpUseCaseProvider),
     logoutUseCase: ref.watch(logoutUseCaseProvider),
-    repository: ref.watch(authRepositoryProvider),
+    listenAuthStateUseCase: ref.watch(listenAuthStateUseCaseProvider),
   );
 });
