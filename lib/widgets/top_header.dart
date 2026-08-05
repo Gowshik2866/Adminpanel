@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/theme/app_theme.dart';
+import 'package:sample_app/providers/auth_provider.dart';
 
-class TopHeader extends StatelessWidget {
+class TopHeader extends ConsumerWidget {
   const TopHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider);
+
     return Container(
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -138,16 +142,16 @@ class TopHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Manikandan',
-                    style: TextStyle(
+                  Text(
+                    user?.name ?? 'Guest',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    'Attendance Cell',
+                    user != null ? 'Super Admin' : 'Login Required',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 11,
@@ -160,8 +164,8 @@ class TopHeader extends StatelessWidget {
                 radius: 18,
                 backgroundColor: Colors.white.withValues(alpha: 0.2),
                 child: Text(
-                  'AT',
-                  style: TextStyle(
+                  user?.name.substring(0, 2).toUpperCase() ?? 'G',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,

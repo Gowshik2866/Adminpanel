@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/section_title.dart';
+import 'package:sample_app/providers/auth_provider.dart';
+import 'package:sample_app/providers/settings_provider.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
   @override
-  State<SettingsScreen> createState() => SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => SettingsScreenState();
 }
 
-class SettingsScreenState extends State<SettingsScreen> {
-  bool isDarkMode = false;
+class SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool emailNotifs = true;
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(authProvider);
+    final settings = ref.watch(settingsProvider);
+    final isDarkMode = settings.isDarkMode;
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SingleChildScrollView(
@@ -25,7 +31,50 @@ class SettingsScreenState extends State<SettingsScreen> {
               title: 'Portal Settings',
               subtitle: 'Manage your preferences and security configurations.',
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
+
+            // Profile Area
+            if (user != null) ...[
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: AppTheme.primary,
+                    child: Text(
+                      user.name.substring(0, 2).toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        user.email,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+            ],
 
             // Preferences Group
             const Text(
@@ -74,7 +123,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                     subtitle: const Text('Toggle dark theme appearance'),
                     trailing: Switch.adaptive(
                       value: isDarkMode,
-                      onChanged: (val) => setState(() => isDarkMode = val),
+                      onChanged: (val) {
+                        ref.read(settingsProvider.notifier).toggleTheme(val);
+                      },
                       // ignore: deprecated_member_use
                       activeColor: AppTheme.primary,
                     ),

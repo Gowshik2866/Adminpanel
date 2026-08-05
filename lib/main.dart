@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/app_shell.dart';
+import 'package:sample_app/providers/settings_provider.dart';
 
-void main() => runApp(const StaffAdminApp());
+void main() => runApp(const ProviderScope(child: StaffAdminApp()));
 
-class StaffAdminApp extends StatelessWidget {
+class StaffAdminApp extends ConsumerWidget {
   const StaffAdminApp({super.key});
+
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: 'College Staff Portal',
-    debugShowCheckedModeBanner: false,
-    theme: AppTheme.theme,
-    home: const AppShell(),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+
+    return MaterialApp(
+      title: 'College Staff Portal',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme
+          .theme, // Replace this later with a dedicated light theme if split, for now let flutter handle or define explicit dark
+      themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: const AppShell(),
+    );
+  }
 }
 
 // -------------------------------------------------------------
@@ -34,15 +43,6 @@ class StaffAdminApp extends StatelessWidget {
 //-------------------------------------------------------------
 // ATTENDANCE REQUEST
 //--------------------------------------------------------------
-class LeaveRequests extends StatelessWidget {
-  const LeaveRequests({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
-}
 
 // -------------------------------------------------------------
 // REPORTS SCREEN WITH LOADING STATE
