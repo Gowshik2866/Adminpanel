@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:sample_app/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 const _defaultPadding = EdgeInsets.all(16);
 
-class AnimatedHoverCard extends StatefulWidget {
+class AnimatedHoverCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
@@ -16,43 +15,18 @@ class AnimatedHoverCard extends StatefulWidget {
   });
 
   @override
-  State<AnimatedHoverCard> createState() => _AnimatedHoverCardState();
-}
-
-class _AnimatedHoverCardState extends State<AnimatedHoverCard> {
-  bool isHovered = false;
-
-  @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, isHovered ? -4 : 0, 0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isHovered
-                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
-                  : Theme.of(context).dividerColor,
-              width: isHovered ? 1.5 : 1.0,
-            ),
-            boxShadow: isHovered
-                ? AppTheme.cardShadow
-                : [
-                    BoxShadow(
-                      color: AppTheme.shadowColor.withValues(alpha: 0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-          ),
-          child: Padding(padding: widget.padding, child: widget.child),
+    return Card(
+      elevation: 2.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8.0),
+        child: Padding(
+          padding: padding,
+          child: child,
         ),
       ),
     );

@@ -7,15 +7,15 @@ import 'package:sample_app/features/leave/presentation/providers/leave_provider.
 import 'package:sample_app/core/enums.dart';
 import 'package:sample_app/features/leave/presentation/screens/holiday_details_screen.dart';
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-const double _kMaxContentWidth = 1100.0;
-const double _kContentPaddingH = 24.0;
 
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
+
+
+const double maxContentWidth = 1100.0;
+const double contentPaddingH = 24.0;
+
+
+
+
 class LeaveRequestsScreen extends ConsumerStatefulWidget {
   const LeaveRequestsScreen({super.key});
 
@@ -151,16 +151,16 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
             child: Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: _kMaxContentWidth),
+                constraints: const BoxConstraints(maxWidth: maxContentWidth),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Search + Filters
                     Padding(
                       padding: EdgeInsets.fromLTRB(
-                        _kContentPaddingH,
+                        contentPaddingH,
                         24,
-                        _kContentPaddingH,
+                        contentPaddingH,
                         0,
                       ),
                       child: Column(
@@ -281,9 +281,9 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
                                 )
                               : ListView.separated(
                                   padding: EdgeInsets.fromLTRB(
-                                    _kContentPaddingH,
+                                    contentPaddingH,
                                     16,
-                                    _kContentPaddingH,
+                                    contentPaddingH,
                                     32,
                                   ),
                                   itemCount: filtered.length,
@@ -328,9 +328,9 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
 // Sub-widgets
 // ===========================================================================
 
-// ---------------------------------------------------------------------------
+
 // Page header
-// ---------------------------------------------------------------------------
+
 class _PageHeader extends StatelessWidget {
   final int pendingCount;
   const _PageHeader({required this.pendingCount});
@@ -342,12 +342,12 @@ class _PageHeader extends StatelessWidget {
       child: Align(
         alignment: Alignment.center,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: _kMaxContentWidth),
+          constraints: const BoxConstraints(maxWidth: maxContentWidth),
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              _kContentPaddingH,
+              contentPaddingH,
               16,
-              _kContentPaddingH,
+              contentPaddingH,
               16,
             ),
             child: Row(
@@ -421,9 +421,9 @@ class _PageHeader extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Small square icon button
-// ---------------------------------------------------------------------------
+
 class _IconBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -452,9 +452,9 @@ class _IconBtn extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Tab bar
-// ---------------------------------------------------------------------------
+
 class _TabSection extends StatelessWidget {
   final TabController controller;
   const _TabSection({required this.controller});
@@ -466,7 +466,7 @@ class _TabSection extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: _kMaxContentWidth),
+          constraints: const BoxConstraints(maxWidth: maxContentWidth),
           child: TabBar(
             controller: controller,
             labelColor: Theme.of(context).colorScheme.primary,
@@ -492,9 +492,9 @@ class _TabSection extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Pill-shaped filter dropdown
-// ---------------------------------------------------------------------------
+
 class _FilterDropdown extends StatelessWidget {
   final String value;
   final List<String> items;
@@ -540,9 +540,9 @@ class _FilterDropdown extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Summary strip
-// ---------------------------------------------------------------------------
+
 class _SummaryStrip extends StatelessWidget {
   final List<LeaveRequestModel> requests;
   const _SummaryStrip({required this.requests});
@@ -621,9 +621,9 @@ class _SummaryChip extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Request card  ← PRIMARY FIX AREA
-// ---------------------------------------------------------------------------
+
 class _RequestCard extends StatefulWidget {
   final LeaveRequestModel data;
   final VoidCallback onApprove;
@@ -755,7 +755,7 @@ class _RequestCardState extends State<_RequestCard> {
                     ),
                   ),
                   SizedBox(width: 16),
-                  _StatusBadge(status: req.status),
+                  StatusBadge(status: req.status),
                 ],
               ),
 
@@ -841,9 +841,9 @@ class _RequestCardState extends State<_RequestCard> {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Info tile (label + value stacked, icon leading)
-// ---------------------------------------------------------------------------
+
 class _InfoTile extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -902,12 +902,12 @@ class _InfoTile extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Status badge
-// ---------------------------------------------------------------------------
-class _StatusBadge extends StatelessWidget {
+
+class StatusBadge extends StatelessWidget {
   final LeaveStatus status;
-  const _StatusBadge({required this.status});
+  const StatusBadge({required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -950,9 +950,9 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Filled / outlined action button  (height fixed at 48 for alignment)
-// ---------------------------------------------------------------------------
+
 class _ActionButton extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -1006,9 +1006,9 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Eye / view button — fixed 48×48
-// ---------------------------------------------------------------------------
+
 class _EyeButton extends StatelessWidget {
   final VoidCallback onTap;
   const _EyeButton({required this.onTap});
@@ -1036,9 +1036,9 @@ class _EyeButton extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
+
 // Detail dialog row
-// ---------------------------------------------------------------------------
+
 class _DetailRow extends StatelessWidget {
   final IconData icon;
   final String text;
