@@ -147,17 +147,6 @@ flutter test integration_test # E2E flows
    firebase deploy --only hosting
    ```
 
-## Team Contributions
-| Module | Responsibilities |
-| :--- | :--- |
-| **Core Architecture** | Setup Riverpod, FirestoreService, Theme |
-| **Auth & Routing** | Firebase Auth integration, Session tracking |
-| **Attendance & Leave** | Batch processing logic, date math, approval flow |
-| **Analytics (Reports)** | Hash map grouping, UI charts, Trend algorithms |
-
-## License
-MIT License
-
 ## Acknowledgements
 *   [Flutter](https://flutter.dev/)
 *   [Riverpod](https://riverpod.dev/)
