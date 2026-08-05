@@ -1,0 +1,28 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/windows/include",
+        "${workspaceFolder}/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/windows/include",
+        "${workspaceFolder}/windows/flutter/ephemeral"
+      ],
+      "defines": [
+        "WIN32",
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "cppStandard": "c++17",
+      "intelliSenseMode": "msvc-x86",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/windows/include",
+          "${workspaceFolder}/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/windows/include",
+          "${workspaceFolder}/windows/flutter/ephemeral"
+        ]
+      }
+    }
+  ],
+  "version": 4
+}
