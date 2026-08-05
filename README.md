@@ -118,11 +118,6 @@ No manual `.env` file is required. The application relies on `firebase_options.d
 *   **Report Aggregation**: `AbsenceLeaveReportScreen` collapses $O(N \times M)$ rendering operations to $O(N + M)$ by pre-building a dictionary (`Map<String, List<AttendanceRecord>>`) mapped by `staffId` before rendering UI elements.
 *   **Calendar-Aware Math**: Incrementing date ranges for multi-day leaves uses `DateTime(year, month, day + 1)` to prevent daylight saving time (DST) drifts.
 
-## Screenshots
-![Dashboard Overview](/path/to/placeholder/dashboard.png)
-![Absence Report](/path/to/placeholder/report.png)
-![Staff Management](/path/to/placeholder/staff.png)
-
 ## Future Improvements
 *   **Backend Offloading**: Migrate complex data aggregations from client-side Riverpod providers to Firebase Cloud Functions to conserve mobile battery and memory.
 *   **Pagination**: Implement cursor-based pagination for Firestore streams (`limit()`, `startAfterDocument()`) to handle unbounded list growth.
