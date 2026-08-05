@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:sample_app/features/staff/domain/entities/staff_model.dart';
+import 'package:sample_app/core/enums.dart';
+import 'package:sample_app/features/leave/domain/entities/leave_request.dart';
 import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/animated_hover_card.dart';
 
 class LeaveRequestCard extends StatelessWidget {
-  final LeaveRequest data;
+  final LeaveRequestModel data;
 
   const LeaveRequestCard({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedHoverCard(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,22 +29,22 @@ class LeaveRequestCard extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data.name,
+                      data.staff.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      "${data.role} • ${data.employeeId}",
+                      "${data.staff.role} • ${data.staff.id}",
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 13,
@@ -55,7 +56,7 @@ class LeaveRequestCard extends StatelessWidget {
               _buildStatusBadge(context, data.status),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             children: [
               Icon(
@@ -63,11 +64,11 @@ class LeaveRequestCard extends StatelessWidget {
                 size: 18,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
-              SizedBox(width: 8),
-              Text(data.leaveType),
+              const SizedBox(width: 8),
+              Text(data.leaveType.name.toUpperCase()),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
               Icon(
@@ -75,7 +76,7 @@ class LeaveRequestCard extends StatelessWidget {
                 size: 16,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(data.dateRange),
             ],
           ),
@@ -97,10 +98,9 @@ class LeaveRequestCard extends StatelessWidget {
 
   Widget _statusChip(String text, Color color) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -114,4 +114,3 @@ class LeaveRequestCard extends StatelessWidget {
     );
   }
 }
-

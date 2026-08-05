@@ -90,11 +90,12 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
+            Material(
+              color: theme.cardColor,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: theme.dividerColor),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.dividerColor),
               ),
               child: Column(
                 children: [
@@ -184,11 +185,12 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
+            Material(
+              color: theme.cardColor,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: theme.dividerColor),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.dividerColor),
               ),
               child: Column(
                 children: [

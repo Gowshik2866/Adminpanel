@@ -29,7 +29,7 @@ class UserModel extends User {
         (e) => e.name == map['role'],
         orElse: () => Role.other,
       ),
-      lastLogin: DateTime.tryParse(map['lastLogin'] ?? '') ?? DateTime.now(),
+      lastLogin: DateTime.tryParse(map['lastLogin'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 }

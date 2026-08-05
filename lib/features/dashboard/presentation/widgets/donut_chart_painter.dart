@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 class DonutChartPainter extends CustomPainter {
-  final double value;
+  final double presentRate;
+  final double absentRate;
+  final double lateRate;
   final Color backgroundColor;
   final Color successColor;
   final Color errorColor;
   final Color warningColor;
 
   const DonutChartPainter({
-    required this.value,
+    required this.presentRate,
+    required this.absentRate,
+    required this.lateRate,
     required this.backgroundColor,
     required this.successColor,
     required this.errorColor,
@@ -31,30 +35,43 @@ class DonutChartPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round,
     );
 
-    const gaps = [0.0, 0.89, 0.96, 1.0];
+    final totalPct = presentRate + absentRate + lateRate;
+    final normalizedPresent = totalPct > 0 ? presentRate / totalPct : 0.0;
+    final normalizedAbsent = totalPct > 0 ? absentRate / totalPct : 0.0;
+
+    final gaps = [
+      0.0,
+      normalizedPresent,
+      normalizedPresent + normalizedAbsent,
+      1.0,
+    ];
     final colors = [successColor, errorColor, warningColor];
 
     for (int i = 0; i < 3; i++) {
       final startAngle = -3.14159 / 2 + gaps[i] * 2 * 3.14159;
       final sweepAngle = (gaps[i + 1] - gaps[i]) * 2 * 3.14159;
 
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sweepAngle,
-        false,
-        Paint()
-          ..color = colors[i]
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = strokeWidth
-          ..strokeCap = StrokeCap.round,
-      );
+      if (sweepAngle > 0) {
+        canvas.drawArc(
+          Rect.fromCircle(center: center, radius: radius),
+          startAngle,
+          sweepAngle,
+          false,
+          Paint()
+            ..color = colors[i]
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = strokeWidth
+            ..strokeCap = StrokeCap.round,
+        );
+      }
     }
   }
 
   @override
   bool shouldRepaint(DonutChartPainter oldDelegate) =>
-      oldDelegate.value != value ||
+      oldDelegate.presentRate != presentRate ||
+      oldDelegate.absentRate != absentRate ||
+      oldDelegate.lateRate != lateRate ||
       oldDelegate.backgroundColor != backgroundColor ||
       oldDelegate.successColor != successColor ||
       oldDelegate.errorColor != errorColor ||

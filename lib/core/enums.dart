@@ -20,6 +20,7 @@ enum Role {
   marketing,
   admin,
   other,
+  staff,
 }
 
 // Helper methods for displaying Enums

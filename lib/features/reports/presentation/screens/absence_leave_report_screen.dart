@@ -16,10 +16,16 @@ class AbsenceLeaveReportScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
 
+    // Pre-group attendance records by staffId for O(1) lookups
+    final recordsByStaff = <String, List<dynamic>>{};
+    for (final r in allRecords) {
+      recordsByStaff.putIfAbsent(r.staffId, () => []).add(r);
+    }
+
     // Compute per-staff absence & leave counts
     final data =
         staffList.map((staff) {
-          final staffRecords = allRecords.where((r) => r.staffId == staff.id);
+          final staffRecords = recordsByStaff[staff.id] ?? [];
           int absentDays = 0;
           int leaveDays = 0;
           for (final r in staffRecords) {

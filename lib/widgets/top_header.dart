@@ -161,7 +161,11 @@ class TopHeader extends ConsumerWidget {
                 radius: 18,
                 backgroundColor: onPrimary.withValues(alpha: 0.2),
                 child: Text(
-                  user?.name.substring(0, 2).toUpperCase() ?? 'G',
+                  (user != null && user.name.isNotEmpty)
+                      ? (user.name.length >= 2
+                          ? user.name.substring(0, 2).toUpperCase()
+                          : user.name.toUpperCase())
+                      : 'G',
                   style: TextStyle(
                     color: onPrimary,
                     fontSize: 13,

@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_underscores, curly_braces_in_flow_control_structures
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/features/auth/presentation/providers/auth_notifier.dart';
@@ -28,23 +26,6 @@ const _kDarkInput = Color(0xFF0F172A);
 const _kDarkInputB = Color(0xFF334155);
 const _kDarkText = Color(0xFFF8FAFC);
 const _kDarkSub = Color(0xFF94A3B8);
-
-// ── Typography factory ────────────────────────────────────────────────────────
-
-TextStyle _t({
-  required double size,
-  FontWeight weight = FontWeight.w400,
-  Color? color,
-  double? lh,
-  double ls = 0,
-}) => TextStyle(
-  fontFamily: 'Inter',
-  fontSize: size,
-  fontWeight: weight,
-  color: color,
-  height: lh,
-  letterSpacing: ls,
-);
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LoginScreen
@@ -106,8 +87,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     if (err == null) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const AppShell(),
-          transitionsBuilder: (_, a, __, c) => FadeTransition(
+          pageBuilder: (ctx, anim1, anim2) => const AppShell(),
+          transitionsBuilder: (ctx, a, anim2, c) => FadeTransition(
             opacity: CurvedAnimation(parent: a, curve: Curves.easeIn),
             child: c,
           ),
@@ -171,8 +152,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   onSubmit: _submit,
                   onSignUp: () => Navigator.of(context).pushReplacement(
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => const SignUpScreen(),
-                      transitionsBuilder: (_, a, __, c) =>
+                      pageBuilder: (ctx, anim1, anim2) => const SignUpScreen(),
+                      transitionsBuilder: (ctx, a, anim2, c) =>
                           FadeTransition(opacity: a, child: c),
                       transitionDuration: const Duration(milliseconds: 280),
                     ),
@@ -265,23 +246,25 @@ class _LeftPanel extends StatelessWidget {
                 const SizedBox(height: 32),
                 Text(
                   'StaffAdmin\nDashboard',
-                  style: _t(
-                    size: 44,
-                    weight: FontWeight.w800,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontFamily: 'Inter',
+                    fontSize: 44,
+                    fontWeight: FontWeight.w800,
                     color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    lh: 1.15,
-                    ls: -0.5,
+                    height: 1.15,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'Efficient Staff Management & Administration Platform.\nManage staff, leave records, attendance, and reports efficiently.',
-                  style: _t(
-                    size: 15,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontFamily: 'Inter',
+                    fontSize: 15,
                     color: isDark
                         ? const Color(0xFF94A3B8)
                         : const Color(0xFF475569),
-                    lh: 1.6,
+                    height: 1.6,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -434,17 +417,23 @@ class _RightPanel extends StatelessWidget {
                   children: [
                     Text(
                       'Welcome Back',
-                      style: _t(
-                        size: 28,
-                        weight: FontWeight.w700,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontFamily: 'Inter',
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
                         color: txtCol,
-                        ls: -0.5,
+                        letterSpacing: -0.5,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Please sign in to access your dashboard.',
-                      style: _t(size: 15, color: subCol, lh: 1.5),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontFamily: 'Inter',
+                        fontSize: 15,
+                        color: subCol,
+                        height: 1.5,
+                      ),
                     ),
                     const SizedBox(height: 32),
 
@@ -520,11 +509,14 @@ class _RightPanel extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Text(
                                     'Remember Me',
-                                    style: _t(
-                                      size: 14,
-                                      color: subCol,
-                                      weight: FontWeight.w500,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!.copyWith(
+                                          fontFamily: 'Inter',
+                                          fontSize: 14,
+                                          color: subCol,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -550,7 +542,11 @@ class _RightPanel extends StatelessWidget {
                         children: [
                           Text(
                             "Don't have an account? ",
-                            style: _t(size: 14, color: subCol),
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  color: subCol,
+                                ),
                           ),
                           _HoverLink(
                             text: 'Sign Up',
@@ -583,7 +579,12 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     label,
-    style: _t(size: 14, weight: FontWeight.w600, color: txtCol),
+    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontFamily: 'Inter',
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: txtCol,
+    ),
   );
 }
 
@@ -617,14 +618,15 @@ class _HoverLinkState extends State<_HoverLink> {
         onTap: widget.onTap,
         child: AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 150),
-          style:
-              _t(
-                size: 14,
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontFamily: 'Inter',
+                fontSize: 14,
                 color: _hover
                     ? widget.color.withValues(alpha: .8)
                     : widget.color,
-                weight: widget.weight,
-              ).copyWith(
+                fontWeight: widget.weight,
+              )
+              .copyWith(
                 decoration: widget.underline || _hover
                     ? TextDecoration.underline
                     : TextDecoration.none,
@@ -697,12 +699,20 @@ class _InputFieldState extends State<_InputField> {
           controller: widget.controller,
           obscureText: widget.obscureText,
           keyboardType: widget.keyboardType,
-          style: _t(size: 15, color: widget.txtCol),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            fontFamily: 'Inter',
+            fontSize: 15,
+            color: widget.txtCol,
+          ),
           onFieldSubmitted: widget.onSubmitted,
           decoration: InputDecoration(
             isDense: true,
             hintText: widget.hint,
-            hintStyle: _t(size: 15, color: widget.subCol.withValues(alpha: .6)),
+            hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontFamily: 'Inter',
+              fontSize: 15,
+              color: widget.subCol.withValues(alpha: .6),
+            ),
             prefixIcon: Icon(widget.icon, size: 20, color: widget.subCol),
             suffixIcon: widget.onToggleObscure != null
                 ? IconButton(
@@ -756,10 +766,11 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: _t(
-                size: 14,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontFamily: 'Inter',
+                fontSize: 14,
                 color: const Color(0xFFEF4444),
-                weight: FontWeight.w500,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -824,11 +835,12 @@ class _LoginButtonState extends State<_LoginButton> {
                     )
                   : Text(
                       'Login',
-                      style: _t(
-                        size: 16,
-                        weight: FontWeight.w600,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        ls: 0.5,
+                        letterSpacing: 0.5,
                       ),
                     ),
             ),
@@ -895,9 +907,10 @@ class _ThemeToggleState extends State<_ThemeToggle> {
               const SizedBox(width: 8),
               Text(
                 widget.isDark ? 'Dark Mode' : 'Light Mode',
-                style: _t(
-                  size: 14,
-                  weight: FontWeight.w500,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   color: widget.isDark ? Colors.white : const Color(0xFF1E293B),
                 ),
               ),

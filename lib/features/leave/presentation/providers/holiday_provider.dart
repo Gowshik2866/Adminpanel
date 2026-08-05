@@ -1,75 +1,50 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import 'package:sample_app/features/leave/domain/entities/holiday.dart';
+import 'package:sample_app/features/leave/presentation/providers/leave_provider.dart';
 import 'package:sample_app/features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:sample_app/features/staff/presentation/providers/staff_provider.dart';
 import 'package:sample_app/core/enums.dart';
 import 'package:sample_app/features/attendance/domain/entities/attendance.dart';
 
-class HolidayNotifier extends StateNotifier<List<Holiday>> {
-  final _uuid = const Uuid();
+final holidayStreamProvider = StreamProvider<List<Holiday>>((ref) {
+  final repository = ref.watch(leaveRepositoryProvider);
+  return repository.getHolidaysStream();
+});
 
-  HolidayNotifier()
-    : super([
-        Holiday(
-          id: 'h-1',
-          title: 'New Year',
-          description: 'Happy New Year!',
-          startDate: DateTime(DateTime.now().year, 1, 1),
-          endDate: DateTime(DateTime.now().year, 1, 1),
-          department: 'All',
-        ),
-        Holiday(
-          id: 'h-2',
-          title: 'Today Holiday',
-          description: 'A mock holiday for today',
-          startDate: DateTime(
-            DateTime.now().year,
-            DateTime.now().month,
-            DateTime.now().day,
-          ),
-          endDate: DateTime(
-            DateTime.now().year,
-            DateTime.now().month,
-            DateTime.now().day,
-          ),
-          department: 'All',
-        ),
-      ]);
+class HolidayController {
+  final Ref _ref;
 
-  void addHoliday(
+  HolidayController(this._ref);
+
+  Future<void> addHoliday(
     String title,
     String description,
     DateTime startDate,
     DateTime endDate,
     String department,
   ) {
-    state = [
-      ...state,
-      Holiday(
-        id: _uuid.v4(),
-        title: title,
-        description: description,
-        startDate: startDate,
-        endDate: endDate,
-        department: department,
-      ),
-    ];
+    final holiday = Holiday(
+      id: '', // Firestore generates this
+      title: title,
+      description: description,
+      startDate: startDate,
+      endDate: endDate,
+      department: department,
+    );
+    return _ref.read(leaveRepositoryProvider).addHoliday(holiday);
   }
 
-  void updateHoliday(Holiday holiday) {
-    state = [
-      for (final h in state)
-        if (h.id == holiday.id) holiday else h,
-    ];
+  Future<void> updateHoliday(Holiday holiday) {
+    return _ref.read(leaveRepositoryProvider).addHoliday(holiday);
   }
 
-  void deleteHoliday(String id) {
-    state = state.where((h) => h.id != id).toList();
+  Future<void> deleteHoliday(String id) {
+    return _ref.read(leaveRepositoryProvider).deleteHoliday(id);
   }
 
   bool isHoliday(DateTime date, String department) {
-    return state.any((h) {
+    final holidays = _ref.read(holidayProvider);
+    return holidays.any((h) {
       final dateOnly = DateTime(date.year, date.month, date.day);
       final startOnly = DateTime(
         h.startDate.year,
@@ -88,37 +63,36 @@ class HolidayNotifier extends StateNotifier<List<Holiday>> {
     });
   }
 
-  // Called by other modules to optionally prevent leave
   bool preventLeaveSubmission(DateTime date, String department) {
     return isHoliday(date, department);
   }
 }
 
-final holidayProvider = StateNotifierProvider<HolidayNotifier, List<Holiday>>((
-  ref,
-) {
-  return HolidayNotifier();
+final holidayControllerProvider = Provider<HolidayController>((ref) {
+  return HolidayController(ref);
+});
+
+// Backward compatibility provider for UI and attendance
+final holidayProvider = Provider<List<Holiday>>((ref) {
+  final asyncHolidays = ref.watch(holidayStreamProvider);
+  return asyncHolidays.value ?? [];
 });
 
 final attendanceWithHolidayProvider = Provider<List<AttendanceRecord>>((ref) {
   final attendance = ref.watch(attendanceProvider);
-  final holidayNotifier = ref.watch(holidayProvider.notifier);
-  final staffList = ref.watch(
-    staffProvider,
-  ); // to get department for each staff
+  final holidayController = ref.watch(holidayControllerProvider);
+  final staffList = ref.watch(staffProvider);
 
   return attendance.map((record) {
     final staff = staffList.where((s) => s.id == record.staffId).firstOrNull;
-    if (staff != null && holidayNotifier.isHoliday(record.date, staff.dept)) {
+    if (staff != null && holidayController.isHoliday(record.date, staff.dept)) {
       return record.copyWith(status: AttendanceStatus.holiday);
     }
     return record;
   }).toList();
 });
 
-final todaysAttendanceWithHolidayProvider = Provider<List<AttendanceRecord>>((
-  ref,
-) {
+final todaysAttendanceWithHolidayProvider = Provider<List<AttendanceRecord>>((ref) {
   final records = ref.watch(attendanceWithHolidayProvider);
   final today = DateTime.now();
   return records
@@ -135,4 +109,3 @@ final dashboardHolidayCountProvider = Provider<int>((ref) {
   final records = ref.watch(todaysAttendanceWithHolidayProvider);
   return records.where((r) => r.status == AttendanceStatus.holiday).length;
 });
-

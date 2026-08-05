@@ -62,12 +62,12 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
   // ── actions ───────────────────────────────────────────────────────────────
 
   void _approve(String id, String name) {
-    ref.read(leaveProvider.notifier).approveLeave(id);
+    ref.read(leaveControllerProvider).approveLeave(id);
     _showSnack("Approved $name's request", AppTheme.success);
   }
 
   void _reject(String id, String name) {
-    ref.read(leaveProvider.notifier).rejectLeave(id);
+    ref.read(leaveControllerProvider).rejectLeave(id);
     _showSnack("Rejected $name's request", Theme.of(context).colorScheme.error);
   }
 

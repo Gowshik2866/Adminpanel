@@ -138,7 +138,7 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    final notifier = ref.read(holidayProvider.notifier);
+                    final notifier = ref.read(holidayControllerProvider);
                     if (existing == null) {
                       notifier.addHoliday(
                         titleController.text,
@@ -286,7 +286,7 @@ class _HolidayDetailsScreenState extends ConsumerState<HolidayDetailsScreen> {
                               ),
                               onPressed: () {
                                 ref
-                                    .read(holidayProvider.notifier)
+                                    .read(holidayControllerProvider)
                                     .deleteHoliday(h.id);
                               },
                             ),

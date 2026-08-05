@@ -1,16 +1,13 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:sample_app/features/auth/domain/entities/user.dart';
 import 'package:sample_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:sample_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:sample_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:sample_app/features/auth/domain/usecases/login_usecase.dart';
-import 'package:sample_app/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:sample_app/features/auth/domain/usecases/signup_usecase.dart';
-import 'package:sample_app/features/auth/domain/usecases/listen_auth_state_usecase.dart';
 import 'package:sample_app/features/auth/domain/entities/user.dart';
 import 'package:sample_app/core/enums.dart';
 
-// ─── Dependency Injection ───────────────────────────────────────────────────
+// ─── Dependency Injection Providers ─────────────────────────────────────────
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSourceImpl();
@@ -20,61 +17,45 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(ref.watch(authRemoteDataSourceProvider));
 });
 
-final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
-  return LoginUseCase(ref.watch(authRepositoryProvider));
-});
+final authLoadingProvider = StateProvider<bool>((ref) => false);
 
-final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
-  return SignUpUseCase(ref.watch(authRepositoryProvider));
-});
-
-final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
-  return LogoutUseCase(ref.watch(authRepositoryProvider));
-});
-
-final listenAuthStateUseCaseProvider = Provider<ListenAuthStateUseCase>((ref) {
-  return ListenAuthStateUseCase(ref.watch(authRepositoryProvider));
-});
-
-// ─── Auth Notifier ──────────────────────────────────────────────────────────
+// ─── Auth Notifier (State Management) ───────────────────────────────────────
 
 class AuthNotifier extends StateNotifier<User?> {
-  final LoginUseCase _loginUseCase;
-  final SignUpUseCase _signUpUseCase;
-  final LogoutUseCase _logoutUseCase;
-  final ListenAuthStateUseCase _listenAuthStateUseCase;
+  final AuthRepository repository;
+  final Ref ref;
+  StreamSubscription<User?>? _subscription;
 
-  AuthNotifier({
-    required LoginUseCase loginUseCase,
-    required SignUpUseCase signUpUseCase,
-    required LogoutUseCase logoutUseCase,
-    required ListenAuthStateUseCase listenAuthStateUseCase,
-  })  : _loginUseCase = loginUseCase,
-        _signUpUseCase = signUpUseCase,
-        _logoutUseCase = logoutUseCase,
-        _listenAuthStateUseCase = listenAuthStateUseCase,
-        super(null) {
+  AuthNotifier(this.repository, this.ref) : super(null) {
     _listenToAuthState();
   }
 
-  bool _loading = false;
-  bool get isLoading => _loading;
-
   void _listenToAuthState() {
-    _listenAuthStateUseCase.execute().listen((user) {
+    _subscription = repository.authStateChanges.listen((user) {
       state = user;
     });
   }
 
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  void _setLoading(bool value) {
+    ref.read(authLoadingProvider.notifier).state = value;
+  }
+
+  bool get isLoading => ref.read(authLoadingProvider);
+
   Future<String?> login(String email, String password) async {
     try {
-      _loading = true;
-      await _loginUseCase.execute(email, password);
-      // state is updated via authStateChanges listener
-      _loading = false;
+      _setLoading(true);
+      await repository.login(email, password);
+      _setLoading(false);
       return null;
     } catch (e) {
-      _loading = false;
+      _setLoading(false);
       return e.toString().replaceFirst('Exception: ', '');
     }
   }
@@ -87,32 +68,27 @@ class AuthNotifier extends StateNotifier<User?> {
     required Role role,
   }) async {
     try {
-      _loading = true;
-      await _signUpUseCase.execute(
+      _setLoading(true);
+      await repository.signUp(
         email: email,
         password: password,
         name: name,
         department: department,
         role: role,
       );
-      _loading = false;
+      _setLoading(false);
       return null;
     } catch (e) {
-      _loading = false;
+      _setLoading(false);
       return e.toString().replaceFirst('Exception: ', '');
     }
   }
 
   Future<void> logout() async {
-    await _logoutUseCase.execute();
+    await repository.logout();
   }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
-  return AuthNotifier(
-    loginUseCase: ref.watch(loginUseCaseProvider),
-    signUpUseCase: ref.watch(signUpUseCaseProvider),
-    logoutUseCase: ref.watch(logoutUseCaseProvider),
-    listenAuthStateUseCase: ref.watch(listenAuthStateUseCaseProvider),
-  );
+  return AuthNotifier(ref.watch(authRepositoryProvider), ref);
 });

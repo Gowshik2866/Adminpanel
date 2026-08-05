@@ -3,6 +3,8 @@ import 'package:sample_app/core/enums.dart';
 import 'package:sample_app/features/staff/domain/entities/staff.dart';
 import 'package:sample_app/features/staff/presentation/providers/staff_provider.dart';
 import 'package:sample_app/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:sample_app/features/attendance/domain/entities/attendance.dart';
+import 'package:sample_app/core/providers.dart';
 import 'package:sample_app/features/leave/presentation/providers/leave_provider.dart';
 
 enum DashboardFilterType { all, present, absent, late, holiday }
@@ -31,6 +33,7 @@ final dashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
   final activeStaff = ref.watch(activeStaffProvider);
   final todaysAttendance = ref.watch(todaysAttendanceProvider);
   final pendingLeaves = ref.watch(pendingLeavesProvider);
+  final today = ref.watch(todayProvider);
 
   int presentCount = 0;
   int absentCount = 0;
@@ -41,11 +44,14 @@ final dashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
   for (final staff in activeStaff) {
     deptTotal[staff.dept] = (deptTotal[staff.dept] ?? 0) + 1;
 
-    final record = todaysAttendance.firstWhere(
-      (r) => r.staffId == staff.id,
-      orElse: () => throw StateError('No attendance record'),
-      // In a real app we might not throw here, but mock data generates for all
-    );
+    final record =
+        todaysAttendance.where((r) => r.staffId == staff.id).firstOrNull ??
+        AttendanceRecord(
+          id: '',
+          staffId: staff.id,
+          date: today,
+          status: AttendanceStatus.absent,
+        );
 
     if (record.status == AttendanceStatus.present) {
       presentCount++;
@@ -75,13 +81,18 @@ final filteredStaffProvider = Provider<List<Staff>>((ref) {
   final filter = ref.watch(dashboardFilterProvider);
   final activeStaff = ref.watch(activeStaffProvider);
   final todaysAttendance = ref.watch(todaysAttendanceProvider);
+  final today = ref.watch(todayProvider);
 
   return activeStaff.where((staff) {
     if (filter == DashboardFilterType.all) return true;
-    final record = todaysAttendance.firstWhere(
-      (r) => r.staffId == staff.id,
-      orElse: () => throw StateError('No attendance record'),
-    );
+    final record =
+        todaysAttendance.where((r) => r.staffId == staff.id).firstOrNull ??
+        AttendanceRecord(
+          id: '',
+          staffId: staff.id,
+          date: today,
+          status: AttendanceStatus.absent,
+        );
     if (filter == DashboardFilterType.present &&
         record.status == AttendanceStatus.present) {
       return true;
@@ -107,6 +118,7 @@ final filteredDashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
   final todaysAttendance = ref.watch(todaysAttendanceProvider);
   final pendingLeaves = ref.watch(pendingLeavesProvider);
   final filteredStaff = ref.watch(filteredStaffProvider);
+  final today = ref.watch(todayProvider);
 
   int presentCount = 0;
   int absentCount = 0;
@@ -118,10 +130,14 @@ final filteredDashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
   for (final staff in filteredStaff) {
     deptTotal[staff.dept] = (deptTotal[staff.dept] ?? 0) + 1;
 
-    final record = todaysAttendance.firstWhere(
-      (r) => r.staffId == staff.id,
-      orElse: () => throw StateError('No attendance record'),
-    );
+    final record =
+        todaysAttendance.where((r) => r.staffId == staff.id).firstOrNull ??
+        AttendanceRecord(
+          id: '',
+          staffId: staff.id,
+          date: today,
+          status: AttendanceStatus.absent,
+        );
 
     if (record.status == AttendanceStatus.present) {
       presentCount++;
@@ -153,4 +169,3 @@ final filteredDashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
     deptAttendancePercent: deptPercent,
   );
 });
-

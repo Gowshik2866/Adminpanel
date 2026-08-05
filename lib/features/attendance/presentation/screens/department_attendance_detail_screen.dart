@@ -244,7 +244,9 @@ class _DepartmentAttendanceDetailScreenState
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -258,11 +260,46 @@ class _DepartmentAttendanceDetailScreenState
   ) {
     final allAttendanceForStaff = ref.watch(attendanceProvider);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+    // Pre-calculate attendance percentages for each staff member to avoid O(S * A) inside itemBuilder
+    final staffAttendanceStats = <String, double>{};
+    final groupedRecords = <String, List<AttendanceRecord>>{};
+
+    for (final r in allAttendanceForStaff) {
+      groupedRecords.putIfAbsent(r.staffId, () => []).add(r);
+    }
+
+    for (final staff in deptStaff) {
+      final personalRecords = groupedRecords[staff.id] ?? [];
+      final groupedByDate = <DateTime, AttendanceStatus>{};
+      for (final r in personalRecords) {
+        groupedByDate[DateTime(r.date.year, r.date.month, r.date.day)] =
+            r.status;
+      }
+
+      int presentDays = 0;
+      int totalDays = groupedByDate.length;
+      for (final st in groupedByDate.values) {
+        if (st == AttendanceStatus.present) {
+          presentDays++;
+        }
+      }
+      staffAttendanceStats[staff.id] = totalDays == 0
+          ? 0.0
+          : (presentDays / totalDays) * 100.0;
+    }
+
+    // Pre-calculate today's records map
+    final todaysRecordMap = <String, AttendanceRecord>{};
+    for (final r in todaysRecords) {
+      todaysRecordMap[r.staffId] = r;
+    }
+
+    return Material(
+      color: Theme.of(context).cardColor,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Theme.of(context).dividerColor),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,31 +324,12 @@ class _DepartmentAttendanceDetailScreenState
                 Divider(height: 1, color: Theme.of(context).dividerColor),
             itemBuilder: (context, index) {
               final staff = deptStaff[index];
-              final record = todaysRecords
-                  .where((r) => r.staffId == staff.id)
-                  .lastOrNull;
+              final record = todaysRecordMap[staff.id];
               final status = record == null
                   ? AttendanceStatus.absent
                   : record.status;
 
-              int presentDays = 0;
-              final personalRecords = allAttendanceForStaff
-                  .where((r) => r.staffId == staff.id)
-                  .toList();
-              final groupedByDate = <DateTime, AttendanceStatus>{};
-              for (final r in personalRecords) {
-                groupedByDate[DateTime(r.date.year, r.date.month, r.date.day)] =
-                    r.status;
-              }
-              int totalDays = groupedByDate.length;
-              for (final st in groupedByDate.values) {
-                if (st == AttendanceStatus.present) {
-                  presentDays++;
-                }
-              }
-              double overallPercent = totalDays == 0
-                  ? 0
-                  : (presentDays / totalDays) * 100;
+              final overallPercent = staffAttendanceStats[staff.id] ?? 0.0;
 
               return ListTile(
                 contentPadding: EdgeInsets.symmetric(
@@ -319,7 +337,9 @@ class _DepartmentAttendanceDetailScreenState
                   vertical: 8,
                 ),
                 leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
                   child: Text(staff.name.substring(0, 1).toUpperCase()),
                 ),
                 title: Text(
@@ -471,4 +491,3 @@ class LineChartPainter extends CustomPainter {
     return oldDelegate.data != data || oldDelegate.lineColor != lineColor;
   }
 }
-

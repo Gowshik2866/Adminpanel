@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sample_app/core/providers.dart';
 import 'package:sample_app/core/enums.dart';
 import 'package:sample_app/features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:sample_app/features/staff/presentation/providers/staff_provider.dart';
@@ -35,7 +36,7 @@ final departmentTrendProvider =
       final allAttendance = ref.watch(attendanceProvider);
       final deptStaffIds = deptStaff.map((s) => s.id).toSet();
 
-      final now = DateTime.now();
+      final now = ref.watch(todayProvider);
       final normalizedToday = DateTime(now.year, now.month, now.day);
 
       int daysToCompute;
@@ -51,31 +52,25 @@ final departmentTrendProvider =
           break;
       }
 
+      // Index attendance records by date key -> set of present department staff IDs
+      final Map<String, Set<String>> presentStaffByDate = {};
+      for (final r in allAttendance) {
+        if (r.status == AttendanceStatus.present && deptStaffIds.contains(r.staffId)) {
+          final dateKey = '${r.date.year}-${r.date.month}-${r.date.day}';
+          (presentStaffByDate[dateKey] ??= {}).add(r.staffId);
+        }
+      }
+
       List<double> trends = [];
 
       for (int i = daysToCompute - 1; i >= 0; i--) {
         final targetDate = normalizedToday.subtract(Duration(days: i));
+        final dateKey = '${targetDate.year}-${targetDate.month}-${targetDate.day}';
 
-        int presentCount = 0;
-        int totalCount = deptStaff.length;
+        final presentCount = presentStaffByDate[dateKey]?.length ?? 0;
+        final totalCount = deptStaff.length;
 
-        for (final staffId in deptStaffIds) {
-          final record = allAttendance
-              .where(
-                (r) =>
-                    r.staffId == staffId &&
-                    r.date.year == targetDate.year &&
-                    r.date.month == targetDate.month &&
-                    r.date.day == targetDate.day,
-              )
-              .lastOrNull;
-
-          if (record != null && record.status == AttendanceStatus.present) {
-            presentCount++;
-          }
-        }
-
-        double percent = (presentCount / totalCount) * 100.0;
+        double percent = totalCount > 0 ? (presentCount / totalCount) * 100.0 : 0.0;
         trends.add(percent);
       }
 
@@ -85,4 +80,3 @@ final departmentTrendProvider =
 
       return trends;
     });
-

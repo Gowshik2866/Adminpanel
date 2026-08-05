@@ -13,11 +13,17 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final firebase_auth.FirebaseAuth _auth;
+  final FirebaseFirestore _db;
+
+  AuthRemoteDataSourceImpl({
+    firebase_auth.FirebaseAuth? auth,
+    FirebaseFirestore? db,
+  })  : _auth = auth ?? firebase_auth.FirebaseAuth.instance,
+        _db = db ?? FirebaseFirestore.instance;
 
   @override
-  Future<firebase_auth.UserCredential> login(String email, String password) {
+  Future<firebase_auth.UserCredential> login(String email, String password) async {
     return _auth.signInWithEmailAndPassword(
       email: email.trim(),
       password: password.trim(),

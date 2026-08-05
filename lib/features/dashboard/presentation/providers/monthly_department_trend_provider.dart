@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/core/enums.dart';
+import 'package:sample_app/core/providers.dart';
 import 'package:sample_app/features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:sample_app/features/staff/presentation/providers/staff_provider.dart';
 
@@ -21,11 +22,20 @@ final monthlyDepartmentTrendProvider = Provider<List<DepartmentMonthlyTrend>>((
 
   final uniqueDepts = allStaff.map((s) => s.dept).toSet().toList();
 
-  final now = DateTime.now();
+  final now = ref.watch(todayProvider);
   final currentDay = now.day;
 
   // Find total days in current month up to today
   final daysToCompute = currentDay;
+
+  // Pre-compute attendance lookup map for O(1) access
+  // Key: staffId_year_month_day
+  final attendanceMap = <String, AttendanceStatus>{};
+  for (final record in allAttendance) {
+    final key =
+        '${record.staffId}_${record.date.year}_${record.date.month}_${record.date.day}';
+    attendanceMap[key] = record.status;
+  }
 
   List<DepartmentMonthlyTrend> trends = [];
 
@@ -42,17 +52,10 @@ final monthlyDepartmentTrendProvider = Provider<List<DepartmentMonthlyTrend>>((
       int presentCount = 0;
 
       for (final staffId in deptStaffIds) {
-        final record = allAttendance
-            .where(
-              (r) =>
-                  r.staffId == staffId &&
-                  r.date.year == now.year &&
-                  r.date.month == now.month &&
-                  r.date.day == day,
-            )
-            .lastOrNull;
+        final key = '${staffId}_${now.year}_${now.month}_$day';
+        final status = attendanceMap[key];
 
-        if (record != null && record.status == AttendanceStatus.present) {
+        if (status == AttendanceStatus.present) {
           presentCount++;
         }
       }
@@ -75,4 +78,3 @@ final monthlyDepartmentTrendProvider = Provider<List<DepartmentMonthlyTrend>>((
 
   return trends;
 });
-

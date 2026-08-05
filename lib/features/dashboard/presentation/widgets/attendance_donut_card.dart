@@ -54,7 +54,9 @@ class AttendanceDonutCard extends ConsumerWidget {
               height: 180,
               child: CustomPaint(
                 painter: DonutChartPainter(
-                  value: rate,
+                  presentRate: total > 0 ? present / total : 0.0,
+                  absentRate: total > 0 ? absent / total : 0.0,
+                  lateRate: total > 0 ? (total - present - absent) / total : 0.0,
                   backgroundColor: Theme.of(context).dividerColor,
                   successColor: AppTheme.success,
                   errorColor: Theme.of(context).colorScheme.error,

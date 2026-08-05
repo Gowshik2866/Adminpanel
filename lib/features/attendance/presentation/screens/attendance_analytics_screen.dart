@@ -92,10 +92,10 @@ class _AttendanceAnalyticsScreenState
     String staffId,
     String dept,
     List<dynamic> todayRecords,
-    dynamic holidayNotifier,
+    dynamic holidayController,
   ) {
     final today = DateTime.now();
-    if (holidayNotifier.isHoliday(today, dept)) return AttendanceFilter.holiday;
+    if (holidayController.isHoliday(today, dept)) return AttendanceFilter.holiday;
 
     final record = todayRecords.where((r) => r.staffId == staffId).firstOrNull;
 
@@ -120,7 +120,7 @@ class _AttendanceAnalyticsScreenState
 
     final activeStaff = ref.watch(activeStaffProvider);
     final todayRecords = ref.watch(todaysAttendanceProvider);
-    final holidayNotifier = ref.watch(holidayProvider.notifier);
+    final holidayController = ref.watch(holidayControllerProvider);
 
     // ── Compute live counts ──────────────────────────────────────────────────
     int present = 0, absent = 0, late = 0, holiday = 0;
@@ -132,7 +132,7 @@ class _AttendanceAnalyticsScreenState
         staff.id,
         staff.dept,
         todayRecords,
-        holidayNotifier,
+        holidayController,
       );
       staffWithStatus.add((staff: staff, status: status));
       switch (status) {
