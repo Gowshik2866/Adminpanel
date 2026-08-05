@@ -163,30 +163,3 @@ MIT License
 *   [Riverpod](https://riverpod.dev/)
 *   [Firebase](https://firebase.google.com/)
 
----
-
-# Self-Review (Interviewer Perspective)
-
-**Missing documentation:**
-*   Missing comprehensive documentation on how to set up Firestore indexes. The complex `.where()` queries on streams likely require composite indexes that should be documented in a `firestore.indexes.json` snippet.
-
-**Weak explanations:**
-*   The API section is sparse because it uses Firebase SDK, but it fails to mention Firestore Security Rules, which are the *actual* API gatekeepers in a Firebase architecture.
-
-**Unsupported claims:**
-*   "Live data updates via Firestore streams." — The code supports this, but without pagination, claiming it as a scalable "feature" is risky.
-*   No features mentioned are absent from the code. All sections (Batch chunking, $O(N+M)$ reporting) were implemented and verified.
-
-**Files that require additional comments:**
-*   `leave_provider.dart` catches integration errors with `dart:developer` log, but it could use comments explaining *why* it doesn't rollback the primary leave document if the attendance batch fails (lack of transactions).
-
-**Interview Red Flags:**
-*   **Client-Side Aggregation**: Loading all attendance records to calculate trends is a massive red flag for a Senior Engineer role. The README acknowledges this in "Known Limitations," which saves it slightly, but an interviewer will drill into *why* Cloud Functions or aggregate queries weren't used initially.
-*   **Security**: No mention of security rules. A real-world app is entirely insecure without them.
-
-**README Quality Score: 8.5 / 10**
-
-**Suggested Improvements for Interview Readiness:**
-1.  **Add a "Security" Section**: Explicitly state that Firestore Rules govern data access.
-2.  **Highlight Limitations as "Deliberate Scope"**: Rather than calling them "Limitations," reframe them as "Phase 1 Scope," explaining that Cloud Functions are planned for Phase 2. This shows strategic product planning rather than technical oversight.
-3.  **Include a `firestore.indexes.json` snippet**: Show the interviewer you understand NoSQL query optimization.
