@@ -10,7 +10,15 @@ class ReportsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final metrics = ref.watch(reportOverviewProvider);
+    final metricsAsync = ref.watch(reportOverviewProvider);
+    final metrics =
+        metricsAsync.value ??
+        const ReportMetrics(
+          overallAttendancePercent: 0,
+          totalWorkingDays: 0,
+          staffAttendancePercent: {},
+          deptAttendancePercent: {},
+        );
 
     final List<Map<String, dynamic>> reportTypes = [
       {

@@ -61,12 +61,12 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
   // ── actions ───────────────────────────────────────────────────────────────
 
   void _approve(String id, String name) {
-    ref.read(leaveProvider.notifier).approveLeave(id);
+    ref.read(leaveRepositoryProvider).approveLeave(id);
     _showSnack("Approved $name's request", AppTheme.success);
   }
 
   void _reject(String id, String name) {
-    ref.read(leaveProvider.notifier).rejectLeave(id);
+    ref.read(leaveRepositoryProvider).rejectLeave(id);
     _showSnack("Rejected $name's request", AppTheme.danger);
   }
 
@@ -134,189 +134,203 @@ class _LeaveRequestsScreenState extends ConsumerState<LeaveRequestsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final pendingLeaves = ref.watch(pendingLeavesProvider);
-    final leaves = ref.watch(leaveProvider);
+    final leavesAsync = ref.watch(leaveProvider);
+    final leaves = leavesAsync.value ?? [];
+    final pendingCount = leaves
+        .where((l) => l.status == LeaveStatus.pending)
+        .length;
+
     final filtered = _filtered(leaves);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Column(
-        children: [
-          // Header — full width with constrained inner content
-          _PageHeader(pendingCount: pendingLeaves.length),
+      body: leavesAsync.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : leavesAsync.hasError
+          ? Center(child: Text('Error: '))
+          : Column(
+              children: [
+                // Header — full width with constrained inner content
+                _PageHeader(pendingCount: pendingCount),
 
-          // Tabs — full width
-          _TabSection(controller: _tabController),
+                // Tabs — full width
+                _TabSection(controller: _tabController),
 
-          // Constrained scrollable body
-          Expanded(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: _kMaxContentWidth),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Search + Filters
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        _kContentPaddingH,
-                        24,
-                        _kContentPaddingH,
-                        0,
+                // Constrained scrollable body
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: _kMaxContentWidth,
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Search bar
-                          TextField(
-                            onChanged: (v) => setState(() => _searchQuery = v),
-                            decoration: InputDecoration(
-                              hintText: 'Search staff name...',
-                              hintStyle: const TextStyle(
-                                color: AppTheme.textMuted,
-                                fontSize: 14,
-                              ),
-                              prefixIcon: const Icon(
-                                Icons.search_rounded,
-                                color: AppTheme.primary,
-                                size: 20,
-                              ),
-                              filled: true,
-                              fillColor: AppTheme.surface,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 14,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.border,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.border,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.primary,
-                                  width: 2,
-                                ),
-                              ),
+                          // Search + Filters
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              _kContentPaddingH,
+                              24,
+                              _kContentPaddingH,
+                              0,
                             ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Filter row
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _FilterDropdown(
-                                  value: _selectedDept,
-                                  items: const [
-                                    'Departments',
-                                    'CSE',
-                                    'ECE',
-                                    'MECH',
-                                    'IT',
-                                    'AI&DS',
-                                    'CIVIL',
-                                  ],
-                                  onChanged: (v) => setState(
-                                    () => _selectedDept = v ?? _selectedDept,
+                                // Search bar
+                                TextField(
+                                  onChanged: (v) =>
+                                      setState(() => _searchQuery = v),
+                                  decoration: InputDecoration(
+                                    hintText: 'Search staff name...',
+                                    hintStyle: const TextStyle(
+                                      color: AppTheme.textMuted,
+                                      fontSize: 14,
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.search_rounded,
+                                      color: AppTheme.primary,
+                                      size: 20,
+                                    ),
+                                    filled: true,
+                                    fillColor: AppTheme.surface,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                      borderSide: const BorderSide(
+                                        color: AppTheme.border,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                      borderSide: const BorderSide(
+                                        color: AppTheme.border,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                      borderSide: const BorderSide(
+                                        color: AppTheme.primary,
+                                        width: 2,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                _FilterDropdown(
-                                  value: _selectedPeriod,
-                                  items: const [
-                                    'This Week',
-                                    'Today',
-                                    'This Month',
-                                    'Last Month',
-                                  ],
-                                  onChanged: (v) => setState(
-                                    () =>
-                                        _selectedPeriod = v ?? _selectedPeriod,
+
+                                const SizedBox(height: 16),
+
+                                // Filter row
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      _FilterDropdown(
+                                        value: _selectedDept,
+                                        items: const [
+                                          'Departments',
+                                          'CSE',
+                                          'ECE',
+                                          'MECH',
+                                          'IT',
+                                          'AI&DS',
+                                          'CIVIL',
+                                        ],
+                                        onChanged: (v) => setState(
+                                          () => _selectedDept =
+                                              v ?? _selectedDept,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _FilterDropdown(
+                                        value: _selectedPeriod,
+                                        items: const [
+                                          'This Week',
+                                          'Today',
+                                          'This Month',
+                                          'Last Month',
+                                        ],
+                                        onChanged: (v) => setState(
+                                          () => _selectedPeriod =
+                                              v ?? _selectedPeriod,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _FilterDropdown(
+                                        value: _selectedPriority,
+                                        items: const ['Priority', 'A-Z', 'Z-A'],
+                                        onChanged: (v) => setState(
+                                          () => _selectedPriority =
+                                              v ?? _selectedPriority,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                _FilterDropdown(
-                                  value: _selectedPriority,
-                                  items: const ['Priority', 'A-Z', 'Z-A'],
-                                  onChanged: (v) => setState(
-                                    () => _selectedPriority =
-                                        v ?? _selectedPriority,
-                                  ),
-                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Summary strip
+                                _SummaryStrip(requests: leaves),
                               ],
                             ),
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 8),
 
-                          // Summary strip
-                          _SummaryStrip(requests: leaves),
-                        ],
-                      ),
-                    ),
+                          // Tab content
+                          Expanded(
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                // ── Leave Requests tab ─────────────────────────
+                                filtered.isEmpty
+                                    ? const EmptyStateView(
+                                        message: 'No leave requests found.',
+                                        icon: Icons.event_busy_rounded,
+                                      )
+                                    : ListView.separated(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          _kContentPaddingH,
+                                          16,
+                                          _kContentPaddingH,
+                                          32,
+                                        ),
+                                        itemCount: filtered.length,
+                                        separatorBuilder: (_, _) =>
+                                            const SizedBox(height: 16),
+                                        itemBuilder: (_, i) {
+                                          final req = filtered[i];
+                                          return _RequestCard(
+                                            data: req,
+                                            onApprove: () => _approve(
+                                              req.id,
+                                              req.staff.name,
+                                            ),
+                                            onReject: () =>
+                                                _reject(req.id, req.staff.name),
+                                            onView: () => _showDetail(req),
+                                          );
+                                        },
+                                      ),
 
-                    const SizedBox(height: 8),
-
-                    // Tab content
-                    Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          // ── Leave Requests tab ─────────────────────────
-                          filtered.isEmpty
-                              ? const EmptyStateView(
-                                  message: 'No leave requests found.',
-                                  icon: Icons.event_busy_rounded,
-                                )
-                              : ListView.separated(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    _kContentPaddingH,
-                                    16,
-                                    _kContentPaddingH,
-                                    32,
-                                  ),
-                                  itemCount: filtered.length,
-                                  separatorBuilder: (_, _) =>
-                                      const SizedBox(height: 16),
-                                  itemBuilder: (_, i) {
-                                    final req = filtered[i];
-                                    return _RequestCard(
-                                      data: req,
-                                      onApprove: () =>
-                                          _approve(req.id, req.staff.name),
-                                      onReject: () =>
-                                          _reject(req.id, req.staff.name),
-                                      onView: () => _showDetail(req),
-                                    );
-                                  },
+                                // ── OD Requests tab ────────────────────────────
+                                const EmptyStateView(
+                                  message: 'No OD requests found.',
+                                  icon: Icons.work_off_rounded,
                                 ),
-
-                          // ── OD Requests tab ────────────────────────────
-                          const EmptyStateView(
-                            message: 'No OD requests found.',
-                            icon: Icons.work_off_rounded,
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

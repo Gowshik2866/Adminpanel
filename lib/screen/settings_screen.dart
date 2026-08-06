@@ -4,6 +4,7 @@ import 'package:sample_app/theme/app_theme.dart';
 import 'package:sample_app/widgets/section_title.dart';
 import 'package:sample_app/providers/auth_provider.dart';
 import 'package:sample_app/providers/settings_provider.dart';
+import 'package:sample_app/models/system_settings.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -16,8 +17,19 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authProvider);
-    final settings = ref.watch(settingsProvider);
+    final userAsync = ref.watch(authStateProvider);
+    final user = userAsync.value;
+    final settingsAsync = ref.watch(settingsProvider);
+    final settings =
+        settingsAsync.value ??
+        const SystemSettings(
+          workOnSaturdays: false,
+          officeStartTime: '09:00 AM',
+          officeEndTime: '05:00 PM',
+          maxSickLeaves: 12,
+          maxCasualLeaves: 12,
+          maxAnnualLeaves: 15,
+        );
     final isDarkMode = settings.isDarkMode;
 
     return Scaffold(
@@ -124,7 +136,9 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
                     trailing: Switch.adaptive(
                       value: isDarkMode,
                       onChanged: (val) {
-                        ref.read(settingsProvider.notifier).toggleTheme(val);
+                        ref
+                            .read(settingsRepositoryProvider)
+                            .toggleTheme(settings);
                       },
                       // ignore: deprecated_member_use
                       activeColor: AppTheme.primary,

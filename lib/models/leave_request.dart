@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sample_app/core/enums.dart';
 import 'package:sample_app/models/staff.dart';
 
@@ -5,8 +6,7 @@ class LeaveRequestModel {
   final String id;
   final Staff staff;
   final LeaveType leaveType;
-  final String
-  dateRange; // Kept as string for simplicity to match UI, or separate start/end dates.
+  final String dateRange;
   final DateTime startDate;
   final DateTime endDate;
   final LeaveStatus status;
@@ -27,7 +27,7 @@ class LeaveRequestModel {
     if (staff.name.isEmpty) return '?';
     final parts = staff.name.split(' ').where((s) => s.isNotEmpty).toList();
     if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      return ''.toUpperCase();
     }
     return staff.name[0].toUpperCase();
   }
@@ -53,4 +53,94 @@ class LeaveRequestModel {
       reason: reason ?? this.reason,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'staff': staff.toJson(),
+      'leaveType': leaveType.name,
+      'dateRange': dateRange,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'status': status.name,
+      'reason': reason,
+    };
+  }
+
+  factory LeaveRequestModel.fromJson(Map<String, dynamic> json) {
+    return LeaveRequestModel(
+      id: json['id'] as String,
+      staff: Staff.fromJson(json['staff'] as Map<String, dynamic>),
+      leaveType: LeaveType.values.firstWhere(
+        (e) => e.name == json['leaveType'],
+        orElse: () => LeaveType.casual,
+      ),
+      dateRange: json['dateRange'] as String,
+      startDate: DateTime.parse(json['startDate'] as String),
+      endDate: DateTime.parse(json['endDate'] as String),
+      status: LeaveStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+        orElse: () => LeaveStatus.pending,
+      ),
+      reason: json['reason'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'staff': staff.toFirestore(),
+      'leaveType': leaveType.name,
+      'dateRange': dateRange,
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'status': status.name,
+      'reason': reason,
+    };
+  }
+
+  factory LeaveRequestModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    return LeaveRequestModel(
+      id: doc.id,
+      staff: Staff.fromJson(data['staff'] as Map<String, dynamic>? ?? {}),
+      leaveType: LeaveType.values.firstWhere(
+        (e) => e.name == data['leaveType'],
+        orElse: () => LeaveType.casual,
+      ),
+      dateRange: data['dateRange'] as String? ?? '',
+      startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endDate: (data['endDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      status: LeaveStatus.values.firstWhere(
+        (e) => e.name == data['status'],
+        orElse: () => LeaveStatus.pending,
+      ),
+      reason: data['reason'] as String? ?? '',
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LeaveRequestModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          staff == other.staff &&
+          leaveType == other.leaveType &&
+          dateRange == other.dateRange &&
+          startDate == other.startDate &&
+          endDate == other.endDate &&
+          status == other.status &&
+          reason == other.reason;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      staff.hashCode ^
+      leaveType.hashCode ^
+      dateRange.hashCode ^
+      startDate.hashCode ^
+      endDate.hashCode ^
+      status.hashCode ^
+      reason.hashCode;
 }

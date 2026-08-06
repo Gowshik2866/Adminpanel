@@ -13,86 +13,80 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final metrics = ref.watch(dashboardMetricsProvider);
+    final metricsAsync = ref.watch(dashboardMetricsProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SectionTitle(
-                title: 'Dashboard Overview',
-                subtitle: "System status and high-level attendance metrics.",
-              ),
-              const SizedBox(height: 32),
-              const StatisticsOverviewRow(),
-              const SizedBox(height: 32),
-              const Text(
-                'Department Summary',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
+        child: metricsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(child: Text('Error: $err')),
+          data: (metrics) => SingleChildScrollView(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SectionTitle(
+                  title: 'Dashboard Overview',
+                  subtitle: 'System status and high-level attendance metrics.',
                 ),
-              ),
-              const SizedBox(height: 16),
-              GridView.extent(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                maxCrossAxisExtent: 260,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.6,
-                children:
-                    metrics.deptAttendancePercent.entries
-                        .map((entry) {
+                const SizedBox(height: 32),
+                StatisticsOverviewRow(metrics: metrics),
+                const SizedBox(height: 32),
+                const Text(
+                  'Department Summary',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GridView.extent(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  maxCrossAxisExtent: 260,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.6,
+                  children: metrics.deptAttendancePercent.entries.isNotEmpty
+                      ? metrics.deptAttendancePercent.entries.map((entry) {
                           return DepartmentSummaryCard(
                             dept: entry.key,
                             percent: entry.value,
                           );
-                        })
-                        .toList()
-                        .isNotEmpty
-                    ? metrics.deptAttendancePercent.entries.map((entry) {
-                        return DepartmentSummaryCard(
-                          dept: entry.key,
-                          percent: entry.value,
-                        );
-                      }).toList()
-                    : const [
-                        // Fallback if empty
-                        DepartmentSummaryCard(
-                          dept: 'Computer Science',
-                          percent: 0.0,
-                        ),
-                      ],
-              ),
-              const SizedBox(height: 32),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  if (constraints.maxWidth < 800) {
-                    return const Column(
+                        }).toList()
+                      : const [
+                          DepartmentSummaryCard(
+                            dept: 'Computer Science',
+                            percent: 0.0,
+                          ),
+                        ],
+                ),
+                const SizedBox(height: 32),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth < 800) {
+                      return const Column(
+                        children: [
+                          CustomBarChartCard(),
+                          SizedBox(height: 24),
+                          AttendanceDonutCard(),
+                        ],
+                      );
+                    }
+                    return const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomBarChartCard(),
-                        SizedBox(height: 24),
-                        AttendanceDonutCard(),
+                        Expanded(flex: 3, child: CustomBarChartCard()),
+                        SizedBox(width: 24),
+                        Expanded(flex: 2, child: AttendanceDonutCard()),
                       ],
                     );
-                  }
-                  return const Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(flex: 3, child: CustomBarChartCard()),
-                      SizedBox(width: 24),
-                      Expanded(flex: 2, child: AttendanceDonutCard()),
-                    ],
-                  );
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

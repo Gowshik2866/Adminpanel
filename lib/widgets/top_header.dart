@@ -8,7 +8,8 @@ class TopHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
+    final userAsync = ref.watch(authStateProvider);
+    final user = userAsync.value;
 
     return Container(
       height: 64,
@@ -164,7 +165,9 @@ class TopHeader extends ConsumerWidget {
                 radius: 18,
                 backgroundColor: Colors.white.withValues(alpha: 0.2),
                 child: Text(
-                  user?.name.substring(0, 2).toUpperCase() ?? 'G',
+                  user != null && user.name.isNotEmpty
+                      ? user.name.substring(0, 1).toUpperCase()
+                      : 'G',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
@@ -172,6 +175,20 @@ class TopHeader extends ConsumerWidget {
                   ),
                 ),
               ),
+              if (user != null) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(
+                    Icons.logout_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  tooltip: 'Sign Out',
+                  onPressed: () {
+                    ref.read(authRepositoryProvider).logout();
+                  },
+                ),
+              ],
             ],
           ),
         ],

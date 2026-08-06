@@ -1,28 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sample_app/models/user.dart';
-import 'package:sample_app/core/enums.dart';
+import 'package:sample_app/repositories/auth_repository.dart';
 
-class AuthNotifier extends StateNotifier<User?> {
-  AuthNotifier()
-    : super(
-        User(
-          id: 'ADM-001',
-          name: 'Sarah Connor',
-          email: 'admin@college.edu',
-          role: Role.admin,
-          lastLogin: DateTime.now(),
-        ),
-      );
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository();
+});
 
-  void login(User user) {
-    state = user;
-  }
+final authStateProvider = StreamProvider<User?>((ref) {
+  return ref.read(authRepositoryProvider).authStateChanges();
+});
 
-  void logout() {
-    state = null;
-  }
-}
-
-final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
-  return AuthNotifier();
+final currentUserProvider = Provider<User?>((ref) {
+  return ref.read(authRepositoryProvider).currentUser;
 });

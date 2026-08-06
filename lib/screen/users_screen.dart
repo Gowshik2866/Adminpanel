@@ -38,182 +38,192 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final activeStaff = ref.watch(activeStaffProvider);
-    final staffData = _filteredStaff(activeStaff);
+    final staffAsync = ref.watch(staffProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: staffAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+        data: (activeStaff) {
+          final staffData = _filteredStaff(
+            activeStaff.where((s) => s.status == StaffStatus.active).toList(),
+          );
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Expanded(
-                  child: SectionTitle(
-                    title: 'Staff Directory',
-                    subtitle:
-                        'Manage engineering college staff profiles and access.',
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => _showAddStaffDialog(context),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text(
-                    'Add Staff',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Expanded(
+                      child: SectionTitle(
+                        title: 'Staff Directory',
+                        subtitle:
+                            'Manage engineering college staff profiles and access.',
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
+                    ElevatedButton.icon(
+                      onPressed: () => _showAddStaffDialog(context),
+                      icon: const Icon(Icons.add_rounded, size: 18),
+                      label: const Text(
+                        'Add Staff',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // Search Bar with improved Visual Purpose & States
+                TextField(
+                  onChanged: (v) => setState(() => searchQuery = v),
+                  decoration: InputDecoration(
+                    hintText: 'Search by staff name or department...',
+                    hintStyle: const TextStyle(color: AppTheme.textMuted),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppTheme.primary,
+                    ),
+                    filled: true,
+                    fillColor: AppTheme.surface,
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
-                    elevation: 0,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: AppTheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 32),
+                const SizedBox(height: 24),
 
-            // Search Bar with improved Visual Purpose & States
-            TextField(
-              onChanged: (v) => setState(() => searchQuery = v),
-              decoration: InputDecoration(
-                hintText: 'Search by staff name or department...',
-                hintStyle: const TextStyle(color: AppTheme.textMuted),
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  color: AppTheme.primary,
-                ),
-                filled: true,
-                fillColor: AppTheme.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primary,
-                    width: 2,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
-            const SizedBox(height: 24),
+                // Handle Empty State
+                if (staffData.isEmpty)
+                  const EmptyStateView(
+                    message: "No staff found matching your search.",
+                  )
+                else
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      int crossAxisCount = constraints.maxWidth > 1100
+                          ? 3
+                          : (constraints.maxWidth > 700 ? 2 : 1);
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          mainAxisExtent: 96,
+                        ),
+                        itemCount: staffData.length,
+                        itemBuilder: (context, index) {
+                          final staff = staffData[index];
+                          // For UI purposes, pretending Active means Present, Inactive means Absent just visually like original for now,
+                          // or better: map status to UI colors. Originally used 'Present'. Now we use StaffStatus.
+                          final bool isActive =
+                              staff.status == StaffStatus.active;
 
-            // Handle Empty State
-            if (staffData.isEmpty)
-              const EmptyStateView(
-                message: "No staff found matching your search.",
-              )
-            else
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  int crossAxisCount = constraints.maxWidth > 1100
-                      ? 3
-                      : (constraints.maxWidth > 700 ? 2 : 1);
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      mainAxisExtent: 96,
-                    ),
-                    itemCount: staffData.length,
-                    itemBuilder: (context, index) {
-                      final staff = staffData[index];
-                      // For UI purposes, pretending Active means Present, Inactive means Absent just visually like original for now,
-                      // or better: map status to UI colors. Originally used 'Present'. Now we use StaffStatus.
-                      final bool isActive = staff.status == StaffStatus.active;
-
-                      return AnimatedHoverCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 24,
-                              backgroundColor: AppTheme.primaryLight,
-                              child: Text(
-                                staff.name[0].toUpperCase(),
-                                style: const TextStyle(
-                                  color: AppTheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    staff.name,
+                          return AnimatedHoverCard(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: AppTheme.primaryLight,
+                                  child: Text(
+                                    staff.name[0].toUpperCase(),
                                     style: const TextStyle(
+                                      color: AppTheme.primary,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: AppTheme.textPrimary,
+                                      fontSize: 18,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${staff.role} • ${staff.dept}',
-                                    style: const TextStyle(
-                                      color: AppTheme.textSecondary,
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        staff.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                          color: AppTheme.textPrimary,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${staff.role} â€¢ ${staff.dept}',
+                                        style: const TextStyle(
+                                          color: AppTheme.textSecondary,
+                                          fontSize: 12,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isActive
+                                        ? AppTheme.successLight
+                                        : AppTheme.dangerLight,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    isActive ? 'Active' : 'Inactive',
+                                    style: TextStyle(
+                                      color: isActive
+                                          ? AppTheme.success
+                                          : AppTheme.danger,
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 12,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isActive
-                                    ? AppTheme.successLight
-                                    : AppTheme.dangerLight,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                isActive ? 'Active' : 'Inactive',
-                                style: TextStyle(
-                                  color: isActive
-                                      ? AppTheme.success
-                                      : AppTheme.danger,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
-          ],
-        ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -431,8 +441,9 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Check for duplicate email
-      final allStaff = ref.read(staffProvider);
+      final staffAsync = ref.read(staffProvider);
+      final allStaff = staffAsync.value ?? [];
+
       if (allStaff.any((s) => s.email.toLowerCase() == email.toLowerCase())) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error: Email already exists.')),
@@ -441,7 +452,8 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
       }
 
       final newStaff = Staff(
-        id: '', // Will be generated in staffProvider
+        id: DateTime.now().millisecondsSinceEpoch
+            .toString(), // Generate simple ID for now
         name: name,
         email: email,
         phone: phone,
@@ -452,7 +464,7 @@ class _AddStaffDialogState extends ConsumerState<_AddStaffDialog> {
         status: StaffStatus.active,
       );
 
-      ref.read(staffProvider.notifier).addStaff(newStaff);
+      ref.read(staffRepositoryProvider).addStaff(newStaff);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

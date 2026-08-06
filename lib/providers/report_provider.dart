@@ -17,19 +17,37 @@ class ReportMetrics {
   });
 }
 
-final reportOverviewProvider = Provider<ReportMetrics>((ref) {
-  final staffList = ref.watch(staffProvider);
-  final allRecords = ref.watch(attendanceProvider);
+final reportOverviewProvider = Provider<AsyncValue<ReportMetrics>>((ref) {
+  final staffAsync = ref.watch(staffProvider);
+  final allRecordsAsync = ref.watch(attendanceProvider);
 
-  // Determine total mock working days by counting unique dates
+  if (staffAsync.isLoading || allRecordsAsync.isLoading) {
+    return const AsyncValue.loading();
+  }
+
+  if (staffAsync.hasError) {
+    return AsyncValue.error(staffAsync.error!, staffAsync.stackTrace!);
+  }
+  if (allRecordsAsync.hasError) {
+    return AsyncValue.error(
+      allRecordsAsync.error!,
+      allRecordsAsync.stackTrace!,
+    );
+  }
+
+  final staffList = staffAsync.value ?? [];
+  final allRecords = allRecordsAsync.value ?? [];
+
   final uniqueDates = allRecords.map((r) => r.date).toSet();
   int totalDays = uniqueDates.length;
   if (totalDays == 0) {
-    return const ReportMetrics(
-      overallAttendancePercent: 0,
-      totalWorkingDays: 0,
-      staffAttendancePercent: {},
-      deptAttendancePercent: {},
+    return const AsyncValue.data(
+      ReportMetrics(
+        overallAttendancePercent: 0,
+        totalWorkingDays: 0,
+        staffAttendancePercent: {},
+        deptAttendancePercent: {},
+      ),
     );
   }
 
@@ -63,12 +81,14 @@ final reportOverviewProvider = Provider<ReportMetrics>((ref) {
     deptPercent[dept] = expected > 0 ? present / expected : 0.0;
   });
 
-  return ReportMetrics(
-    overallAttendancePercent: (allRecords.isNotEmpty)
-        ? (totalPresents / allRecords.length)
-        : 0.0,
-    totalWorkingDays: totalDays,
-    staffAttendancePercent: staffPercent,
-    deptAttendancePercent: deptPercent,
+  return AsyncValue.data(
+    ReportMetrics(
+      overallAttendancePercent: (allRecords.isNotEmpty)
+          ? (totalPresents / allRecords.length)
+          : 0.0,
+      totalWorkingDays: totalDays,
+      staffAttendancePercent: staffPercent,
+      deptAttendancePercent: deptPercent,
+    ),
   );
 });

@@ -20,10 +20,50 @@ class DashboardMetrics {
   });
 }
 
-final dashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
-  final activeStaff = ref.watch(activeStaffProvider);
-  final todaysAttendance = ref.watch(todaysAttendanceProvider);
-  final pendingLeaves = ref.watch(pendingLeavesProvider);
+final dashboardMetricsProvider = Provider<AsyncValue<DashboardMetrics>>((ref) {
+  final staffAsync = ref.watch(staffProvider);
+  final attendanceAsync = ref.watch(attendanceProvider);
+  final leaveAsync = ref.watch(leaveProvider);
+
+  if (staffAsync.isLoading ||
+      attendanceAsync.isLoading ||
+      leaveAsync.isLoading) {
+    return const AsyncValue.loading();
+  }
+
+  if (staffAsync.hasError) {
+    return AsyncValue.error(staffAsync.error!, staffAsync.stackTrace!);
+  }
+  if (attendanceAsync.hasError) {
+    return AsyncValue.error(
+      attendanceAsync.error!,
+      attendanceAsync.stackTrace!,
+    );
+  }
+  if (leaveAsync.hasError) {
+    return AsyncValue.error(leaveAsync.error!, leaveAsync.stackTrace!);
+  }
+
+  final allStaff = staffAsync.value ?? [];
+  final activeStaff = allStaff
+      .where((s) => s.status == StaffStatus.active)
+      .toList();
+
+  final allAttendance = attendanceAsync.value ?? [];
+  final now = DateTime.now();
+  final todaysAttendance = allAttendance
+      .where(
+        (a) =>
+            a.date.year == now.year &&
+            a.date.month == now.month &&
+            a.date.day == now.day,
+      )
+      .toList();
+
+  final allLeaves = leaveAsync.value ?? [];
+  final pendingLeaves = allLeaves
+      .where((l) => l.status == LeaveStatus.pending)
+      .toList();
 
   int presentCount = 0;
   int absentCount = 0;
@@ -34,16 +74,18 @@ final dashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
   for (final staff in activeStaff) {
     deptTotal[staff.dept] = (deptTotal[staff.dept] ?? 0) + 1;
 
-    final record = todaysAttendance.firstWhere(
-      (r) => r.staffId == staff.id,
-      orElse: () => throw StateError('No attendance record'),
-      // In a real app we might not throw here, but mock data generates for all
-    );
+    final recordIdx = todaysAttendance.indexWhere((r) => r.staffId == staff.id);
 
-    if (record.status == AttendanceStatus.present) {
-      presentCount++;
-      deptPresent[staff.dept] = (deptPresent[staff.dept] ?? 0) + 1;
+    if (recordIdx != -1) {
+      if (todaysAttendance[recordIdx].status == AttendanceStatus.present) {
+        presentCount++;
+        deptPresent[staff.dept] = (deptPresent[staff.dept] ?? 0) + 1;
+      } else {
+        absentCount++;
+        deptPresent[staff.dept] = deptPresent[staff.dept] ?? 0;
+      }
     } else {
+      // If no record, consider absent for metrics
       absentCount++;
       deptPresent[staff.dept] = deptPresent[staff.dept] ?? 0;
     }
@@ -55,11 +97,13 @@ final dashboardMetricsProvider = Provider<DashboardMetrics>((ref) {
     deptPercent[dept] = total > 0 ? (present / total) : 0.0;
   });
 
-  return DashboardMetrics(
-    totalStaff: activeStaff.length,
-    presentToday: presentCount,
-    absentToday: absentCount,
-    pendingLeaves: pendingLeaves.length,
-    deptAttendancePercent: deptPercent,
+  return AsyncValue.data(
+    DashboardMetrics(
+      totalStaff: activeStaff.length,
+      presentToday: presentCount,
+      absentToday: absentCount,
+      pendingLeaves: pendingLeaves.length,
+      deptAttendancePercent: deptPercent,
+    ),
   );
 });
